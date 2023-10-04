@@ -5,12 +5,16 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+ -->
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"
         integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <style>
 /*all input style */
@@ -68,7 +72,7 @@ img.image-set {
     display: inline-block;
 }
 
-.btn {
+/* .btn {
     border: 2px solid gray;
     color: gray;
     background-color: white;
@@ -76,7 +80,7 @@ img.image-set {
     border-radius: 8px;
     font-size: 20px;
     font-weight: bold;
-}
+} */
 
 .upload-btn-wrapper input[type=file] {
     font-size: 100px;
@@ -180,9 +184,29 @@ p.contain.search-rs {
     padding: 10px;
     border: 1px solid gray;
 }
+
+.navbar-nav .nav-item {
+    transition: background-color 0.3s;
+}
+
+/* Style for active link */
+.navbar-nav .nav-item:active {
+    background-color: #007bff; /* Change this to your desired active link color */
+}
+
+input.larger {
+        transform: scale(1.75);
+        margin-bottom: 5%;
+    }
+
+    .row-label {
+        display: block;
+        cursor: pointer;
+        width: 100%;
+    }
 </style>
 
-<body>
+<body id="thememanager">
 
 
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark headpad pl-5">
@@ -192,21 +216,20 @@ p.contain.search-rs {
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="collapsibleNavbar">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="songmanager.php">Add Song</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="editsong.php">Edit Song</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="thememanager.php">Add Theme</a>
-                    </li>
-                </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item <?php echo basename($_SERVER['PHP_SELF']) === 'songmanager.php' ? 'active' : ''; ?>">
+                    <a class="nav-link" href="songmanager.php">Add Song</a>
+                </li>
+                <li class="nav-item <?php echo basename($_SERVER['PHP_SELF']) === 'editsong.php' ? 'active' : ''; ?>">
+                    <a class="nav-link" href="editsong.php">Edit Song</a>
+                </li>
+                <li class="nav-item <?php echo basename($_SERVER['PHP_SELF']) === 'thememanager.php' ? 'active' : ''; ?>">
+                    <a class="nav-link" href="thememanager.php">Add Theme</a>
+                </li>
+                <li class="nav-item <?php echo basename($_SERVER['PHP_SELF']) === 'editThemeHome.php' ? 'active' : ''; ?>">
+                    <a class="nav-link" href="editThemeHome.php">Edit Theme</a>
+                </li>
+            </ul>
             </div>
         </div>
     </nav>
-
-</body>
-
-</html>

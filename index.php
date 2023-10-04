@@ -153,7 +153,7 @@ require_once("php/header2.php");
                               $circa = $_GET['circa']; 
                               $region = $_GET['region']; 
                               $types = isset($_GET['type']) ? $_GET['type'] : array();
-                              $sql = "SELECT * FROM `newTable` WHERE `Stitle` LIKE '%" . $search_query . "%'";
+                              $sql = "SELECT * FROM `newtable` WHERE `Stitle` LIKE '%" . $search_query . "%'";
 
                               if (!empty($circa)) {
                                   $sql .= " AND `circa` = '" . $circa . "'";
@@ -218,7 +218,7 @@ require_once("php/header2.php");
                                             
                                 
                             } else {
-                              $sql = "SELECT * FROM `newTable` ORDER BY `Stitle` ASC LIMIT {$offset}, {$limit}";
+                              $sql = "SELECT * FROM `newtable` ORDER BY `Stitle` ASC LIMIT {$offset}, {$limit}";
                               $result = mysqli_query($conn, $sql);
 
                               while ($row = mysqli_fetch_assoc($result)) {

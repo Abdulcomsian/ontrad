@@ -13,11 +13,12 @@ if(isset($_POST['feature']) && $_POST['feature'] === 'on'){
 }else{
     $featureStatus = "UnFeatured";
 }
-if(isset($_POST['themetitle']) && !empty($_POST['themetitle']) ){
+
+
+if(isset($_POST['themetitle']) && !empty($_POST['themetitle']) && !empty($_POST['themeannotation']) ){
     $themetitle = $_POST['themetitle'];
     $themeinfo = $_POST['themeannotation'];
     $themeimage = $_POST['filename'];
-    // $featureStatus = $_POST['feature'];
 
 
 
@@ -45,37 +46,7 @@ require_once("php/header.php");
 
 
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <title>Theme Manager </title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script> -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <style type="text/css">
-    input.larger {
-        transform: scale(1.75);
-        margin-bottom: 5%;
-    }
-
-    .row-label {
-        display: block;
-        cursor: pointer;
-        width: 100%;
-    }
-    </style>
-
-
-</head>
-
-<body id="thememanager">
-    <div id="alert-message"></div>
+<!-- <div id="main-form-alert"></div> -->
     <!--start-->
     <div class="wrapper" style="padding: 0% 5% 0% 5%;">
         <form action="thememanager.php" method="post" enctype="multipart/form-data" id="uploadtheme">
@@ -83,8 +54,7 @@ require_once("php/header.php");
                 <!--title and edit modal-->
                 <div class="row">
                     <div class="col-lg-8 col-md-6 col-sm-12">
-                        <h4><input type="text" class="form-control " placeholder="Theme Title" id="themetitle"
-                                name="title" required></h4>
+                        <input type="text" class="form-control" placeholder="Theme Title" id="themetitle" name="title" data-toggle="popover" data-trigger="manual" data-placement="bottom" data-content="Please add Theme Title." required>
                     </div>
                     <div class="col-lg-2 col-md-3 col-sm-6" style="text-align: right;">
                         <!--Theme is placed on the index page in the featured theme section-->
@@ -95,7 +65,7 @@ require_once("php/header.php");
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#themelist">
                             Edit Theme
                         </button>
-                        
+
                         <!-- The Edit Modal -->
                         <div class="modal fade" id="themelist">
                             <div class="modal-dialog">
@@ -115,21 +85,19 @@ require_once("php/header.php");
                                                     if($result){
                                                         while($row = mysqli_fetch_assoc($result)){
                                                             echo "
-
                                                             <tr>
-                <td style='padding:0;'>
-                    <label class='row-label' for='".$row['id']."' style='margin:5px;'>
-                        <input type='radio' name='themeLoadRadio' class='theme_title_load' id='".$row['id']."'>
-                        ".$row['theme_title']."
-                    </label>
-                </td>
-            </tr>
-                                                          
+                                                                <td style='padding:0;'>
+                                                                    <label class='row-label' for='".$row['id']."' style='margin:5px;'>
+                                                                        <input type='radio' name='themeLoadRadio' class='theme_title_load' id='".$row['id']."'>
+                                                                        ".$row['theme_title']."
+                                                                    </label>
+                                                                </td>
+                                                            </tr>                                                          
                                                             ";
                                                         }
                                                     }
                                                 ?>
-                                                </thead>
+                                            </thead>
                                         </table>
                                     </div>
                                     <!-- Modal footer -->
@@ -145,13 +113,13 @@ require_once("php/header.php");
                 <div class="row pt-5">
                     <div class="col-lg-6 col-md-5 col-sm-6" style="text-align: left;">
                         <textarea class="form-control" rows="5" name="annotation" id="themeannotation"
-                            placeholder="Theme Info" required></textarea>
+                            placeholder="Theme Info" data-toggle="popover" data-trigger="manual" data-placement="bottom" data-content="Please add Theme Title." required></textarea>
                     </div>
                     <div class="col-lg-6 col-md-7 col-sm-6">
                         <div class="container-fluid p-3"
                             style="border-style: solid; border-color: blue; border-width: 1px; text-align: center;">
                             <img id="themeImage" name="image" src="" alt="Theme Image"
-                                style="max-width: 100%; max-height: 200px;">
+                                style="max-width: 100%; max-height: 200px;"required>
                             <p type="hidden" id="imageName">Image Name: </p>
                         </div>
                         <br>
@@ -256,19 +224,25 @@ require_once("php/header.php");
     </div>
     <!--end of wrapper-->
     <script type="text/javascript">
+    
     </script>
 
 
     <script>
     $(document).ready(function() {
-        $('#search_query').on('keydown', function() {
+        var transferredIDs = [];  
+        $('#search_query').on('keyup', function() {
             var searchQuery = $(this).val();
+
+            
+            
             if (searchQuery) {
                 $.ajax({
-                    method: 'GET',
-                    url: 'songSearch.php',
+                    method: 'POST',
+                    url: 'songSearch1.php',
                     data: {
-                        search_query: searchQuery
+                        search_query: searchQuery,
+                        transferred_ids: transferredIDs,
                     },
                     success: function(data) {
                         $('#search_results').html(data);
@@ -282,85 +256,124 @@ require_once("php/header.php");
                 $('#search_results').html('');
             }
         });
-    });
-    var transferredIDs = [];
+        
 
-    $(function() {
-        $(document).on("click", ".transferRows", function(e) {
-            e.preventDefault();
-            var selectedRows = $(".mainTable input.song_checkbox:checked").parents("tr");
+        
+        
+        
+        $(function() {
+            $(document).on("click", ".transferRows", function(e) {
+                e.preventDefault();
+                var selectedRows = $(".mainTable input.song_checkbox:checked").parents("tr");
+                var clonedRows = selectedRows.clone();
+                $(".secondTable").append(clonedRows);            
+                selectedRows.find("input.song_checkbox").map(function() {
+                    transferredIDs.push($(this).attr("id"));
+                }).get();
 
-            var clonedRows = selectedRows.clone();
-            $(".secondTable").append(clonedRows);
-
-
-            selectedRows.find("input.song_checkbox").map(function() {
-                transferredIDs.push($(this).attr("id"));
-            }).get();
-            selectedRows.remove();
-            // console.log(transferredIDs);
-
-
+                console.log(transferredIDs);
+                selectedRows.remove();
+            });
         });
-    });
+    
+
+    
 
     $(document).on("click", "#theme-upload-btn", function(e) {
-        // e.preventDefault();
-
-
+        if(transferredIDs.length>0){
         // imgname = imageName.textContent;
         let formdata = new FormData;
-        // alert(transferredIDs);
-        formdata.append("themetitle", $('#themetitle').val());
-        formdata.append("themeannotation", $('#themeannotation').val());
-        formdata.append("filename", document.getElementById("imageInput").files[0].name);
-        formdata.append("transferIds[]", transferredIDs);
+        // Theme Title
+        if ($('#themetitle').val()) {
+            formdata.append("themetitle", $('#themetitle').val());
+        } else {
+            $('#themetitle').popover('show');
+            $('#themetitle').addClass('border-danger');
+            return;
+            
+        }
 
+        // Theme Annotation
+        if($('#themeannotation').val()){
+            formdata.append("themeannotation", $('#themeannotation').val());
+        }else{
+            $('#themeannotation').popover('show');
+            $('#themeannotation').addClass('border-danger');
+            return;
+        }
+        
+        // formdata.append("filename", document.getElementById("imageInput").files[0].name);
+        var imageInput = document.getElementById("imageInput");
 
+        if (imageInput.files.length > 0) {
+            formdata.append("filename", imageInput.files[0].name);
+        } else {
+            e.preventDefault();
+            alert("Please upload Image")
+            return;
+        }
+
+        let selectedIDs = [];
+        $('.song_checkbox').each(function() {
+            if ($(this).prop('checked')) {
+                selectedIDs.push($(this).val());
+            }
+        });
+        formdata.append("transferIds[]", selectedIDs);
         let featureStatus = $('#btncheck1').prop('checked') ? 'on' : 'off';
         formdata.append("feature", featureStatus);
-
-        // Append transferredIDs as an array
-        // formdata.append("transferIds[]", transferredIDs);
-
-        $.ajax({
-            url: 'thememanager.php',
-            type: 'POST',
-            data: formdata,
-            processData: false,
-            contentType: false,
-            success: function(output) {
-                alert("Record Inserted Successfully");
-            },
-        });
+if(selectedIDs.length>0){
+                $.ajax({
+                url: 'thememanager.php',
+                type: 'POST',
+                data: formdata,
+                processData: false,
+                contentType: false,
+                success: function(output) {
+                    if (output) {
+                        // var alertElement = $(
+                        //     '<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                        //     '<strong>Success!</strong> Theme Added Successfully.' +
+                        //     '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                        //     '</div>'
+                        // );
+                        
+                        // $('#main-form-alert').append(alertElement); 
+                        // setTimeout(function() {
+                        //     window.location.reload();
+                        // }, 2000);
+                        alert("Theme Added Successfully");
+                    } else {
+                        alert("Theme is not added successfully, Please Try Again")
+                    }
+                },
+            });
+        }else{
+            e.preventDefault();
+                alert("Please select at least one song");
+        }
+       
+    }else{
+        e.preventDefault();
+        alert("Please Insert Songs into Theme Songs Section");
+    }
 
     });
-
-    // Checkbox checking
-    $(document).ready(function() {
-        // Attach a click event handler to all labels with the 'row-label' class
-        $("table").on("click", ".row-label", function() {
-            // Find the associated checkbox within the label
-            var checkbox = $(this).find("input[type='checkbox']");
-
-            // Toggle the checkbox's checked state
-            checkbox.prop("checked", !checkbox.prop("checked"));
-        });
-    });
-
 
     // modal load theme button AJAX Call
-$(document).ready(function() {
-    $(document).on("click", "#load-theme-btn", function(e){
-        // e.preventdefault();
-        var selectedTheme = $(".themeLoadTable input.theme_title_load:checked").parents("tr").attr("id");
-        // alert("Selected theme: " + selectedTheme);
-        window.location.replace("editTheme.php?id=136");
-    });
+    // $(document).ready(function() {
+        $(document).on("click", "#load-theme-btn", function(e) {
+            var selectedTheme = $(".themeLoadTable input.theme_title_load:checked").parents("tr");
+            var firstID = selectedTheme.find("input.theme_title_load").first().attr("id");
+            window.location.replace("editTheme.php?id=" + firstID);
+        });
+    // });
 
 });
     </script>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
