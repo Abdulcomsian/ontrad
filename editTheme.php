@@ -46,8 +46,8 @@ require_once("php/header.php");
                 <!--title and edit modal-->
                 <div class="row">
                     <div class="col-lg-8 col-md-6 col-sm-12">
-                        <h4><input type="text" class="form-control " value="<?php echo $themeTitle; ?>" id="themetitle"
-                                name="title"></h4>
+                        <input type="text" class="form-control " value="<?php echo $themeTitle; ?>" id="themetitle"
+                                name="title" data-toggle="popover" data-trigger="manual" data-placement="bottom" data-content="Please add Theme Title." required>
                     </div>
                     <div class="col-lg-2 col-md-3 col-sm-6" style="text-align: right;">
                         <!--Theme is placed on the index page in the featured theme section-->
@@ -57,8 +57,8 @@ require_once("php/header.php");
                 </div>
                 <div class="row pt-5">
                     <div class="col-lg-6 col-md-5 col-sm-6" style="text-align: left;">
-                        <textarea class="form-control" rows="5" name="annotation" id="themeannotation"
-                        ><?php echo $themeDescription ?></textarea>
+                        <textarea class="form-control" rows="5" name="annotation" id="themeannotation" data-toggle="popover" data-trigger="manual" data-placement="bottom" data-content="Please add Theme Title."
+                        required><?php echo $themeDescription ?></textarea>
                     </div>
                     <div class="col-lg-6 col-md-7 col-sm-6">
                         <div class="container-fluid p-3"
@@ -269,8 +269,26 @@ require_once("php/header.php");
     $(document).on("click", "#theme-update-btn", function(e) {
         let selectedIDs = [];
         let formdata = new FormData;
-        formdata.append("themetitle", $('#themetitle').val());
-        formdata.append("themeannotation", $('#themeannotation').val());
+
+        // Theme Title
+        if ($('#themetitle').val()) {
+            formdata.append("themetitle", $('#themetitle').val());
+        } else {
+            $('#themetitle').popover('show');
+            $('#themetitle').addClass('border-danger');
+            return;
+            
+        }
+
+        // Theme Annotation
+        if($('#themeannotation').val()){
+            formdata.append("themeannotation", $('#themeannotation').val());
+        }else{
+            $('#themeannotation').popover('show');
+            $('#themeannotation').addClass('border-danger');
+            return;
+        }
+
         var imageInput = document.getElementById("imageInput");
         if (imageInput.files.length > 0) {
             formdata.append("filename", imageInput.files[0].name);
