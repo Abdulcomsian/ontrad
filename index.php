@@ -153,6 +153,12 @@ require_once("php/header2.php");
                               $circa = $_GET['circa']; 
                               $region = $_GET['region']; 
                               $types = isset($_GET['type']) ? $_GET['type'] : array();
+                                // this condition will return to index.php if the below condition is true
+                                if (empty($_GET['search_query']) && empty($_GET['circa']) && empty($_GET['region']) && empty($_GET['type'])) {
+                                        echo '<script>window.location.href = "index.php";</script>';
+                                        exit;
+                                }
+
                               $sql = "SELECT * FROM `newtable` WHERE `Stitle` LIKE '%" . $search_query . "%'";
 
                               if (!empty($circa)) {
@@ -211,16 +217,17 @@ require_once("php/header2.php");
                                       </div>
                                   </div>
                                   ";
-                              }
-                              }else{
-                                echo "<h6 style='text-align: center; margin-left: 374px;'> We couldn`t find related to your search </h6>";
-                              }
-                                            
-                                
-                            } else {
+                              }         
+                            }else{
+                                echo "No songs Found";
+                            }
+                            }else {
                               $sql = "SELECT * FROM `newtable` ORDER BY `Stitle` ASC LIMIT {$offset}, {$limit}";
                               $result = mysqli_query($conn, $sql);
 
+                            if(mysqli_num_rows($result)>0){
+
+                            
                               while ($row = mysqli_fetch_assoc($result)) {
                                 echo "
                                     <div class='col'>
@@ -256,29 +263,83 @@ require_once("php/header2.php");
                                 </div>
                                 ";
                             }
+                        }else{
+                            echo "No Songs Found";
+                        }
 
-                            $sql1 = "SELECT * FROM `newTable`";
-                            $result1 = mysqli_query($conn, $sql1);
-
-                            if(mysqli_num_rows($result1)>0){
-                              $totalRecords = mysqli_num_rows($result1);
-                              $totalPages = ceil($totalRecords / $limit);
-                              echo "<ul class='pagination mt-3'>";
-                              for($i=1; $i<=$totalPages; $i++){
-                                if($i==$page){
-                                  $active = "active";
-                                }else{
-                                  $active = " ";
-                                }
-                    
-                              echo  "<li class='".$active."'><a class='page-link' href='index.php?page=".$i."'>".$i."</a></li>";
-                                
-                              }
-                              echo "</ul>";
-                            }
-                            }
-                            ?>
+                        }
+                    ?>
                 </div>
+                <?php
+                    // pagination while searching (Filtering through Songs)
+                    if(isset($_GET['search_query'])){
+                        $search_query = $_GET['search_query'];
+                        $circa = $_GET['circa']; 
+                        $region = $_GET['region']; 
+                        $types = isset($_GET['type']) ? $_GET['type'] : array();
+                        $sql1 = "SELECT * FROM `newtable` WHERE `Stitle` LIKE '%" . $search_query . "%'";                            ;
+
+                        if (!empty($circa)) {
+                            $sql1 .= " AND `circa` = '" . $circa . "'";
+                        }
+
+                        if (!empty($region)) {
+                            $sql1 .= " AND `region` = '" . $region . "'";
+                        }
+
+                        if (!empty($types)) {
+                        $typeConditions = array();
+                        foreach ($types as $type) {
+                            $typeConditions[] = "(`theme1` = '$type' OR `theme2` = '$type' OR `theme3` = '$type')";
+                        }
+                        $sql1 .= " AND (" . implode(" OR ", $typeConditions) . ")";
+                        }
+
+                        $sql1 .= " ORDER BY `Stitle` ASC";
+
+                        $result1 = mysqli_query($conn, $sql1);
+                        
+                        if(mysqli_num_rows($result1)>9){
+                        $totalRecords = mysqli_num_rows($result1);
+                        $totalPages = ceil($totalRecords / $limit);
+                        echo "<ul class='pagination mt-3'>";
+                        for($i=1; $i<=$totalPages; $i++){
+                            if($i==$page){
+                            $active = "active";
+                            }else{
+                            $active = " ";
+                            }
+                            
+                            if(!empty($types)){
+                                echo "<li class='".$active."'><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&type[]=".$type."&page=".$i."&status=songs'>".$i."</a></li>";
+                            }else{
+                                echo "<li class='".$active."'><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&page=".$i."&status=songs'>".$i."</a></li>";
+                            }
+                        }
+                        echo "</ul>";
+                        }
+                    }else{
+                        $sql1 = "SELECT * FROM `newTable`";
+                        $result1 = mysqli_query($conn, $sql1);
+                        
+                        if(mysqli_num_rows($result1)>0){
+                        $totalRecords = mysqli_num_rows($result1);
+                        $totalPages = ceil($totalRecords / $limit);
+                        echo "<ul class='pagination mt-3'>";
+                        for($i=1; $i<=$totalPages; $i++){
+                            if($i==$page){
+                            $active = "active";
+                            }else{
+                            $active = " ";
+                            }
+
+                        echo  "<li class='".$active."'><a class='page-link' href='index.php?page=".$i."&status=songs'>".$i."</a></li>";
+                            
+                        }
+                        echo "</ul>";
+                        }
+                    }
+                ?>
             </div>
         </div>
 
@@ -305,227 +366,84 @@ require_once("php/header2.php");
                 <!-- reverse order of songs A to Z --> &uarr; &nbsp; &darr;
             </h4>
         </div>
+        <!-- theme section starts here  -->
         <div class="album">
             <div class="container">
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
 
-                    <div class="col">
-                        <!-- songcard -->
-                        <div class="card shadow-sm">
-                            <svg class="bd-placeholder-img card-img-top" width="100%" height="225"
-                                xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail"
-                                preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef"
-                                    dy=".3em">ONTRAD IMAGE</text>
-                            </svg>
-                            <div class="card-body">
-                                <h4> Title </h4>
-                                <p class="card-text">This is a wider card with supporting text below as a natural
-                                    lead-in to additional content. This content is a little bit longer.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View
-                                            Page</button>
-                                    </div>
+                    <?php
+                    $limit = 9;
+                    if(isset($_GET['themePage'])){
+                      $page = $_GET['themePage'];
+                    }else{
+                      $page = 1;
+                    }
+                    $offset = ($page-1)*$limit;
 
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- End of songcard -->
-                    <div class="col">
-                        <!-- songcard -->
-                        <div class="card shadow-sm">
-                            <svg class="bd-placeholder-img card-img-top" width="100%" height="225"
-                                xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail"
-                                preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef"
-                                    dy=".3em">ONTRAD IMAGE</text>
-                            </svg>
-                            <div class="card-body">
-                                <h4> Title </h4>
-                                <p class="card-text">This is a wider card with supporting text below as a natural
-                                    lead-in to additional content. This content is a little bit longer.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View
-                                            Page</button>
-                                    </div>
+                        $sql = "SELECT * FROM `themes` WHERE `status` = 'Featured' LIMIT {$offset}, {$limit}";
+                        $result = mysqli_query($conn, $sql);
+                        if(mysqli_num_rows($result)>0){
+                            while($row = mysqli_fetch_assoc($result)){
+                                echo "
+                                <div class='col'>
+                                        <!-- songcard -->
+                                        <div class='card shadow-sm' style='height: 500px !important;'>
+                                   ";     
+                                echo $row['theme_image'] != NULL || !empty($row['theme_image']) ?
+                                "<img src='themeimage_uploads/" . $row['theme_image'] . "' style='max-height: 200px;' alt='Image Not found'>": "
+                                <svg class='bd-placeholder-img card-img-top' width='100%' height='225'
+                                                xmlns='http://www.w3.org/2000/svg' role='img' aria-label='Placeholder: Thumbnail'
+                                                preserveAspectRatio='xMidYMid slice' focusable='false'>
+                                                <title>Placeholder</title>
+                                                <rect width='100%' height='100%' fill='#55595c' /><text x='50%' y='50%' fill='#eceeef'
+                                                    dy='.3em'>ONTRAD IMAGE</text>
+                                            </svg>";
+                                echo "            
+                                            <div class='card-body'>
+                                                <h4> ".$row['theme_title']." </h4>
+                                                <p class='card-text'>".substr($row['theme_info'], 0, 50)."...</p>
+                                                <div class='d-flex justify-content-between align-items-center'>
+                                                    <div class='btn-group'>
+                                                        <button type='button' class='btn btn-sm btn-outline-secondary'>View
+                                                            Page</button>
+                                                    </div>
 
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- End of songcard -->
-                    <div class="col">
-                        <!-- songcard -->
-                        <div class="card shadow-sm">
-                            <svg class="bd-placeholder-img card-img-top" width="100%" height="225"
-                                xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail"
-                                preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef"
-                                    dy=".3em">ONTRAD IMAGE</text>
-                            </svg>
-                            <div class="card-body">
-                                <h4> Title </h4>
-                                <p class="card-text">This is a wider card with supporting text below as a natural
-                                    lead-in to additional content. This content is a little bit longer.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View
-                                            Page</button>
-                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><!-- End of songcard -->
+                                ";
 
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- End of songcard -->
+                                
+                            }
+                        }
+                    ?>
 
-                    <div class="col">
-                        <!-- songcard -->
-                        <div class="card shadow-sm">
-                            <svg class="bd-placeholder-img card-img-top" width="100%" height="225"
-                                xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail"
-                                preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef"
-                                    dy=".3em">ONTRAD IMAGE</text>
-                            </svg>
-                            <div class="card-body">
-                                <h4> Title </h4>
-                                <p class="card-text">This is a wider card with supporting text below as a natural
-                                    lead-in to additional content. This content is a little bit longer.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View
-                                            Page</button>
-                                    </div>
 
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- End of songcard -->
-                    <div class="col">
-                        <!-- songcard -->
-                        <div class="card shadow-sm">
-                            <svg class="bd-placeholder-img card-img-top tradgreen" width="100%" height="225" role="img"
-                                aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice"
-                                focusable="false">
-                                <title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef"
-                                    dy=".3em">ONTRAD IMAGE</text>
-                            </svg>
-                            <div class="card-body">
-                                <h4> Title </h4>
-                                <p class="card-text">This is a wider card with supporting text below as a natural
-                                    lead-in to additional content. This content is a little bit longer.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View
-                                            Page</button>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- End of songcard -->
-                    <div class="col">
-                        <!-- songcard -->
-                        <div class="card shadow-sm">
-                            <svg class="bd-placeholder-img card-img-top" width="100%" height="225"
-                                xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail"
-                                preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef"
-                                    dy=".3em">ONTRAD IMAGE</text>
-                            </svg>
-                            <div class="card-body">
-                                <h4> Title </h4>
-                                <p class="card-text">This is a wider card with supporting text below as a natural
-                                    lead-in to additional content. This content is a little bit longer.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View
-                                            Page</button>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- End of songcard -->
-                    <div class="col">
-                        <!-- songcard -->
-                        <div class="card shadow-sm">
-                            <svg class="bd-placeholder-img card-img-top" width="100%" height="225"
-                                xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail"
-                                preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef"
-                                    dy=".3em">ONTRAD IMAGE</text>
-                            </svg>
-                            <div class="card-body">
-                                <h4> Title </h4>
-                                <p class="card-text">This is a wider card with supporting text below as a natural
-                                    lead-in to additional content. This content is a little bit longer.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View
-                                            Page</button>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- End of songcard -->
-                    <div class="col">
-                        <!-- songcard -->
-                        <div class="card shadow-sm">
-                            <svg class="bd-placeholder-img card-img-top" width="100%" height="225"
-                                xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail"
-                                preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef"
-                                    dy=".3em">ONTRAD IMAGE</text>
-                            </svg>
-                            <div class="card-body">
-                                <h4> Title </h4>
-                                <p class="card-text">This is a wider card with supporting text below as a natural
-                                    lead-in to additional content. This content is a little bit longer.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View
-                                            Page</button>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- End of songcard -->
-                    <div class="col">
-                        <!-- songcard -->
-                        <div class="card shadow-sm">
-                            <svg class="bd-placeholder-img card-img-top" width="100%" height="225"
-                                xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail"
-                                preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef"
-                                    dy=".3em">ONTRAD IMAGE</text>
-                            </svg>
-                            <div class="card-body">
-                                <h4> Title </h4>
-                                <p class="card-text">This is a wider card with supporting text below as a natural
-                                    lead-in to additional content. This content is a little bit longer.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View
-                                            Page</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div><!-- End of songcard -->
+                    
                 </div>
+                <?php
+                    $sql1 = "SELECT * FROM `themes` WHERE `status` = 'Featured'";
+                    $result1 = mysqli_query($conn, $sql1);
+
+                    if(mysqli_num_rows($result1)>0){
+                    $totalRecords = mysqli_num_rows($result1);
+                    $totalPages = ceil($totalRecords / $limit);
+                    echo "<ul class='pagination mt-3'>";
+                    for($i=1; $i<=$totalPages; $i++){
+                        if($i==$page){
+                        $active = "active";
+                        }else{
+                        $active = " ";
+                        }
+
+                    echo  "<li class='".$active."'><a class='page-link' href='index.php?themePage=".$i."&status=themes'>".$i."</a></li>";
+                        
+                    }
+                    echo "</ul>";
+                    }
+
+                ?>
             </div>
         </div>
     </div>
