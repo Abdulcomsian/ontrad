@@ -189,7 +189,7 @@ require_once("php/header2.php");
                                 while ($row = mysqli_fetch_assoc($result)) {
                                   echo "
                                       <div class='col'>
-                                          <div class='card shadow-sm' style='height: 600px !important;'>
+                                          <div class='card shadow-sm' style='height: 620px !important;'>
                                               <div class='d-flex flex-column justify-content-between' style='height: 100%;'>";
                               
                                   echo $row['imageThumb'] != NULL || !empty($row['imageThumb'])
@@ -203,19 +203,17 @@ require_once("php/header2.php");
                                       </svg>";
                               
                                   echo "
-                                              <div class='card-body'>
-                                                  <h4>" . $row['Stitle'] . "</h4>
-                                                  <small class='text-body-secondary'><strong>" . $row['circa'] . "</strong></small><small class='text-body-secondary'> " . $row['region'] . "</small>
-                                                  <p class='card-text'>" . substr($row['shortanno'], 0, 50) . "...</p>
-                                              </div>
-                                              <div class='btn-group mt-auto'> <!-- Use mt-auto to move the buttons to the bottom -->
-                                              <a href='song1.php?id=".base64_encode($row['ID'])."' class='btn btn-sm btn-outline-secondary'>
-                                              <i class='fa fa-eye'></i> View Page
-                                          </a>
-                                          <button type='button' class='btn btn-sm btn-outline-secondary'>
-                                              <i class='fa fa-play'></i> Play Song
-                                          </button>
-                                              </div>
+                                            <div class='card-body'>
+                                                <h4>" . $row['Stitle'] . "</h4>
+                                                <small class='text-body-secondary'><strong>" . $row['circa'] . "</strong></small><small class='text-body-secondary'> " . $row['region'] . "</small>
+                                                <p class='card-text'>" . substr($row['shortanno'], 0, 50) . "...</p>
+                                            </div>
+                                            <div class='card-footer' style='background-color: white;'>
+                                            <div class='btn-group'>
+                                                <a href='song1.php?id=".base64_encode($row['ID'])."' class='btn btn-sm btn-outline-secondary'>View Page</a>
+                                                <a href='#' class='btn btn-sm btn-outline-secondary'>Play Song</a>
+                                            </div>
+                                            </div>
                                           </div>
                                       </div>
                                   </div>
@@ -253,13 +251,11 @@ require_once("php/header2.php");
                                                 <small class='text-body-secondary'><strong>" . $row['circa'] . "</strong></small><small class='text-body-secondary'> " . $row['region'] . "</small>
                                                 <p class='card-text'>" . substr($row['shortanno'], 0, 50) . "...</p>
                                             </div>
-                                            <div class='btn-group mt-auto'> <!-- Use mt-auto to move the buttons to the bottom -->
-                                            <a href='song1.php?id=".base64_encode($row['ID'])."' class='btn btn-sm btn-outline-secondary'>
-                                              <i class='fa fa-eye'></i> View Page
-                                          </a>
-                                        <button type='button' class='btn btn-sm btn-outline-secondary'>
-                                            <i class='fa fa-play'></i> Play Song
-                                        </button>
+                                            <div class='card-footer' style='background-color: white;'>
+                                            <div class='btn-group'>
+                                                <a href='song1.php?id=".base64_encode($row['ID'])."' class='btn btn-sm btn-outline-secondary'>View Page</a>
+                                                <button type='button' id='playSong' onclick='playAudio()' class='btn btn-sm btn-outline-secondary'>Play Song</button>
+                                            </div>
                                             </div>
                                         </div>
                                     </div>
@@ -403,21 +399,15 @@ require_once("php/header2.php");
                                             </svg>";
                                 echo "            
                                             <div class='card-body'>
-                                                <h4> ".$row['theme_title']." </h4>
+                                                <h4> ".$row['theme_title']."</h4>
                                                 <p class='card-text'>".substr($row['theme_info'], 0, 50)."...</p>
-                                                <div class='d-flex justify-content-between align-items-center'>
-                                                    <div class='btn-group'>
-                                                        <a href='theme1.php?id=".base64_encode($row['id'])."' class='btn btn-sm btn-outline-secondary'>View
-                                                            Page</a>
-                                                    </div>
-
-                                                </div>
+                                            </div>
+                                            <div class='card-footer' style='background-color: white;'>
+                                                <a href='theme1.php?id=" . base64_encode($row['id']) . "' class='btn btn-sm btn-outline-secondary'>View Page</a>
                                             </div>
                                         </div>
                                     </div><!-- End of songcard -->
                                 ";
-
-                                
                             }
                         }
                     ?>   
@@ -557,6 +547,31 @@ require_once("php/header2.php");
             text.style.display = "none";
         }
     }
+// playing Song
+    let play;
+    let pauseBtn = document.getElementById("pauseSong");
+    let playBtn = document.getElementById("playSong");
+    pauseBtn.style.display = 'none';
+    playBtn.style.display = 'block';
+
+    function playAudio(){
+        if (!play) {
+            play = new Audio("audio/01 Five Mile Chase - Square Dance.mp3");
+            play.play();
+            pauseBtn.style.display = 'block';
+            playBtn.style.display = 'none';
+        }
+    }
+
+    function pauseAudio(){
+        if(play){
+            play.pause();
+            pauseBtn.style.display = 'none';
+            playBtn.style.display = 'block';
+        }  
+    }
+
+
     </script>
 </body>
 

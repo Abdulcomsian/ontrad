@@ -110,12 +110,13 @@ if(isset($_GET['id'])){
                   <div class='card-body'> 
                     <h4> ".$row['Stitle']." </h4>
                     <p class='card-text'>".substr($row['shortanno'], 0, 50)."...</p>
-                    <div class='d-flex justify-content-between align-items-center'>
-                      <div class='btn-group'>
+                  </div>
+
+                  <div class='card-footer' style='background-color:white;'>
+                      <div class='btn-group mt-auto' >
                         <a href='song1.php?id=".base64_encode($row['ID'])."'  class='btn btn-sm btn-outline-secondary'>View Page</a>
-                      </div>
-                     
-                    </div>
+                        <a href='#'  class='btn btn-sm btn-outline-secondary'>Play Song</a>                
+                     </div>
                   </div>
                 </div>
               </div><!-- End of songcard -->
