@@ -285,7 +285,7 @@ input[type=text] {
 
 .ontradbg1 {
   background-repeat: no-repeat;
-  background-image: url("/images/ontradbg1.jpg");
+  background-image: url("../images/ontradbg1.jpg");
   background-size: cover;
 
 }
@@ -297,7 +297,7 @@ input.larger {
 
 .ontradbg2 {
   background-repeat: no-repeat;
-  background-image: url("/images/ontradbg1.jpg");
+  background-image: url("../images/ontradbg1.jpg");
   background-size: cover;
 
 }

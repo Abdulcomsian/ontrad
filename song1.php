@@ -1,6 +1,12 @@
 <?php
 require_once("config/db.php");
 require_once("php/header2.php");
+
+if(isset($_GET['id'])){
+    $id = base64_decode($_GET['id']);
+    $sql = "SELECT * FROM `newtable` WHERE `ID` = '$id'";
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($result);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -10,7 +16,7 @@ require_once("php/header2.php");
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/css/ontrad.css">
+  <link rel="stylesheet" href="css/ontrad.css">
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -47,33 +53,49 @@ require_once("php/header2.php");
   <!--annos and image-->
     <div class="container-fluid px-0">
         <div class="row">
-            <div class="col-sm-8" id="shortanno">
-               
-                    <h2 id="stitle">Lord Alexander's Reel</h1>
-                    <h3 id="songcomposer">Abbie Andrews</h3>
+            <div class="col-sm-8" id="shortanno">               
+                    <h2 id="stitle"><?php echo $row['Stitle'];?></h1>
+                    <h3 id="songcomposer"><?php echo $row['songcomposer']; ?></h3>
         <!--circa and region-->
                 <div class="row">
-                    <div class="col-sm-12 col-lg-4" id="circa">
-                        <h5>Circa -1950-1999</h5>
-                    </div>
-                    <div class="col-sm-12 col-lg-8" id="region">
-                        <h5>Region-Southwest Region</h5>
-                    </div>
+                    <?php
+                    if($row['circa']!=NULL && !empty($row['circa']) || $row['region']!=NULL && !empty($row['region'])){
+                       echo  "
+                        <div class='col-sm-12 col-lg-4' id='circa'>
+                            <h5>Circa- " .$row['circa']. "</h5>
+                        </div>
+                        <div class='col-sm-12 col-lg-8' id='region'>
+                            <h5>Region- ".$row['region']."</h5>
+                        </div>
+                        ";
+                    }
+                    ?>
                 </div>
-            <!--short annotation-->
-            <div class="tfont">short annotation - Lorem ipsum dolor sit amet. Quo asperiores dolores qui perferendis itaque
-            et sint alias et reprehenderit dolores et nihil rerum a nemo rerum. In molestiae cumque non amet molestiae non
-            quidem quasi.
-            </div>
-            <!--long annotation-->
-            <div class="rfont pt-3">Long annotation Here's a rockin' little number by Abbie Andrews and His Canadian Ranch
-            Boys. Lord Alexander's Reel was his big "hit", recorded in the mid '50s. Abbie was from Niagara Falls and his
-            band sometimes included a young accordion player named Walter Ostenek. (Sorry, that's not him in the band
-            picture) The sheet music is an Abbie Andrews medley I put together for the Crooked Stovepipe Folk Orchestra.
-            </div>
+            <?php
+            if($row['shortanno']!=NULL && !empty($row['shortanno']) || $row['longanno']!=NULL && !empty($row['longanno'])){
+                echo "
+                <!--short annotation-->
+                <div class='tfont'>
+                ".$row['shortanno']."
+                </div>
+                <!--long annotation-->
+                <div class='rfont pt-3'>
+                ".$row['longanno']."
+                </div>
+                ";
+            }
+            ?>
             </div>
         <!--right image-->
-            <div class="col-sm-4" style=" text-align: center;"><img src="images/Abbie Andrews Ranch Boys.jpg" style="width: 100%; max-width: 250px;">
+        <?php
+        if($row['imageThumb']!=NULL && !empty($row['imageThumb'])){
+            echo "
+            <div class='col-sm-4' style=' text-align: center;'><img src='images/".$row['imageThumb']."' style='width: 100%; max-width: 250px;'>
+            ";
+        }else{
+            echo "";
+        }
+        ?>
             </div>
         </div>
     </div>
@@ -84,46 +106,82 @@ require_once("php/header2.php");
         <!--Audio-->
         <div style="margin-top: 0%; margin-bottom: 1%;">
             <div style="padding: 0% 3%">
-            <p class="blurbtext">Audio1 - Hic mollitia necessitatibus et alias galisum non repellendus quia a consequatur
-                excepturi ut fugit reprehenderit quo animi repudiandae.</p>
-            <audio controls style="text-align: center;">
-                <source src="audio/LordAlexandersReel.mp3" type="audio/mpeg" id="audio1">
+            <?php
+            if($row['audio1']!=NULL && !empty($row['audio1'])){
+                echo "
+                <p class='blurbtext'>".$row['audioanno']."</p>
+            <audio controls style='text-align: center;'>
+                <source src='audio/".$row['audio1']."' type='audio/mpeg' id='audio1'>
                 Your browser does not support the audio element.
             </audio>
+                ";
+            }else{
+                echo " ";
+            }
+            ?>
+            
             </div>
             <hr>
             <!--This audio and text will not show if empty-->
             <div style="padding: 0% 3%">
-            <p class="blurbtext">Audio2 - This will not appear if there is no second audio</p>
-            <audio controls style="text-align: center;">
-                <source src="audio/LordAlexandersReel.mp3" type="audio/mpeg" id="audio1">
+            <?php
+             if($row['audio2']!=NULL && !empty($row['audio2'])){
+                echo "
+            <audio controls style='text-align: center;'>
+                <source src='audio/".$row['audio2']."' type='audio/mpeg' id='audio1'>
                 Your browser does not support the audio element.
             </audio>
+                ";
+            }else{
+                echo " ";
+            }
+            ?>
+           
             </div>
         </div>
         <h4>Video</h4>
         <!--Video-->
         <div class="container-fluid">
             <div class="embed-responsive embed-responsive-16by9">
-            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/rlWQFQQHDdg?controls=0"
-                title="YouTube video player" frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen></iframe>
-            </div>
-            <div class="blurbtext">VIDEO -This example sdasdasd fdsd dfsd sdf fdsf
-            use media queries to re-arrange the images on different screen sizes:
-            </div>
+            <?php
+            if($row['video2']!=NULL && !empty($row['video2'])){
+                echo "
+                <iframe width='560' height='315' src='".$row['video2']."' title='YouTube video player' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowfullscreen></iframe>
+                </div>
+                <div class=blurbtext'>
+                ".$row['videoanno']."
+                </div>
+                ";
+            }else{
+                echo " ";
+            }
+            ?>
+            
         </div>
         </div>
         <!--sheetmusic-->
-        <div class="col-sm-6" style="text-align: center" id="sheetmusic">
-        <div class="gallery">
-            <a target="_blank" href="images/ABBIE ANDREWS SET.jpg">
-            <img src="images/ABBIE ANDREWS SET.jpg" alt="Mountains" width="600" height="400">
-            </a>
-        </div>
+        <?php
+        if($row['imageFull']!=NULL && !empty($row['imageFull'])){
+            echo "
+            <div class='col-sm-6' style='text-align: center' id='sheetmusic'>
+            <div class='gallery'>
+                <a target='_blank' href='images/".$row['imageFull']."'>
+                <img src='images/".$row['imageFull']."' alt='Mountains' width='600' height='400'>
+                </a>
+            </div>
+            ";
+        }else{
+            echo "No Image Found";
+        }
+        ?>
+       
         <!--sheetanno-->
-        <div class="blurbtext">the sheet music texts goes here</div>
+        <?php
+        if($row['sheetmusic']!=NULL && !empty($row['sheetmusic'])){
+            echo "<div class='blurbtext'>".$row['sheetmusic']."</div>";
+        }
+        ?>
+        
         </div>
     </div>
   <!--end of music-->
@@ -234,3 +292,7 @@ require_once("php/header2.php");
 </body>
 
 </html>
+
+<?php
+}
+?>

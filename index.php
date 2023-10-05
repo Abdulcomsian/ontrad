@@ -1,6 +1,9 @@
 <?php
 require_once("config/db.php");
 require_once("php/header2.php");
+// echo decode_id($encodedId,$seed);
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -206,9 +209,9 @@ require_once("php/header2.php");
                                                   <p class='card-text'>" . substr($row['shortanno'], 0, 50) . "...</p>
                                               </div>
                                               <div class='btn-group mt-auto'> <!-- Use mt-auto to move the buttons to the bottom -->
-                                              <button type='button' class='btn btn-sm btn-outline-secondary'>
+                                              <a href='song1.php?id=".base64_encode($row['ID'])."' class='btn btn-sm btn-outline-secondary'>
                                               <i class='fa fa-eye'></i> View Page
-                                          </button>
+                                          </a>
                                           <button type='button' class='btn btn-sm btn-outline-secondary'>
                                               <i class='fa fa-play'></i> Play Song
                                           </button>
@@ -251,9 +254,9 @@ require_once("php/header2.php");
                                                 <p class='card-text'>" . substr($row['shortanno'], 0, 50) . "...</p>
                                             </div>
                                             <div class='btn-group mt-auto'> <!-- Use mt-auto to move the buttons to the bottom -->
-                                            <button type='button' class='btn btn-sm btn-outline-secondary'>
-                                            <i class='fa fa-eye'></i> View Page
-                                        </button>
+                                            <a href='song1.php?id=".base64_encode($row['ID'])."' class='btn btn-sm btn-outline-secondary'>
+                                              <i class='fa fa-eye'></i> View Page
+                                          </a>
                                         <button type='button' class='btn btn-sm btn-outline-secondary'>
                                             <i class='fa fa-play'></i> Play Song
                                         </button>
@@ -319,7 +322,7 @@ require_once("php/header2.php");
                         echo "</ul>";
                         }
                     }else{
-                        $sql1 = "SELECT * FROM `newTable`";
+                        $sql1 = "SELECT * FROM `newtable`";
                         $result1 = mysqli_query($conn, $sql1);
                         
                         if(mysqli_num_rows($result1)>0){
@@ -404,8 +407,8 @@ require_once("php/header2.php");
                                                 <p class='card-text'>".substr($row['theme_info'], 0, 50)."...</p>
                                                 <div class='d-flex justify-content-between align-items-center'>
                                                     <div class='btn-group'>
-                                                        <button type='button' class='btn btn-sm btn-outline-secondary'>View
-                                                            Page</button>
+                                                        <a href='theme1.php?id=".base64_encode($row['id'])."' class='btn btn-sm btn-outline-secondary'>View
+                                                            Page</a>
                                                     </div>
 
                                                 </div>
@@ -417,10 +420,7 @@ require_once("php/header2.php");
                                 
                             }
                         }
-                    ?>
-
-
-                    
+                    ?>   
                 </div>
                 <?php
                     $sql1 = "SELECT * FROM `themes` WHERE `status` = 'Featured'";
