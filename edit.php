@@ -1,10 +1,21 @@
 <?php
 require_once("config/db.php");
 require_once("php/header.php");
+
 $id = $_GET['id'];
+if(isset($_GET['message'])){
+    $message = $_GET['message'];
+    echo " 
+    <script>
+    alert(' $message ')
+    location.replace('edit.php?id=".$id."');
+    </script>
+    ";
+}
 
 
-$sql = "SELECT * FROM newTable WHERE id=$id";
+
+$sql = "SELECT * FROM `newtable` WHERE id=$id";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
@@ -63,25 +74,25 @@ if ($result->num_rows > 0) {
                             <input type="text" class="form-control" placeholder="catalog number" name="songnum" value="<?php echo $row["songnum"] ?>">
                         </div>
                         <div class="col-lg-8 col-md-8 col-sm-8">
-                            <h3><input type="text" class="form-control " placeholder="Song Title" name="title" value="<?php echo $row["Stitle"] ?>"></h3>
+                            <h3><input type="text" class="form-control " placeholder="Song Title" name="title" value="<?php echo $row["Stitle"] ?>" required></h3>
                         </div>
                         <div class="col-lg-2 col-md-2 col-sm-2">
-                            <input type="text" class="form-control" placeholder="Year" name="songyear" value="<?php echo $row["songyear"] ?>">
+                            <input type="text" class="form-control" placeholder="Year" name="songyear" value="<?php echo $row["songyear"] ?>" required>
                         </div>
                     </div>
                     <!--Composer/artist-->
                     <div class="row input-clr py-2">
                         <div class="col-sm-6">
-                            <h3><input type="text" class="form-control " placeholder="Composer" name="songcomposer" value="<?php echo $row["songcomposer"] ?>"></h3>
+                            <h3><input type="text" class="form-control " placeholder="Composer" name="songcomposer" value="<?php echo $row["songcomposer"] ?>" required></h3>
                         </div>
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" placeholder="Aritst" name="songartist" value="<?php echo $row["songartist"] ?>">
+                            <input type="text" class="form-control" placeholder="Aritst" name="songartist" value="<?php echo $row["songartist"] ?>" required>
                         </div>
                     </div>
                     <div class="alert alert-secondary" role="alert" style="text-align:center" ;> <!--Year Checkbox-->
                         <div class="row">
                             <div class="col">
-                                <select class="form-select form-select-sm mb-1" aria-label=".form-select-sm example" name="circa">
+                                <select class="form-select form-select-sm mb-1" aria-label=".form-select-sm example" name="circa" required>
                                     <option value="<?php echo $row["circa"] ?>"><?php echo $row["circa"] ?></option>
                                     <option value="">CIRCA</option>
                                     <option value="1750-1799">1750-1799</option>
@@ -92,7 +103,7 @@ if ($result->num_rows > 0) {
                                 </select>
                             </div>
                             <div class="col">
-                                <select class="form-select form-select-sm mb-1" aria-label=".form-select-sm example" name="region">
+                                <select class="form-select form-select-sm mb-1" aria-label=".form-select-sm example" name="region" required>
                                     <option value="<?php echo $row["region"] ?>"><?php echo $row["region"] ?></option>
                                     <option value="">REGION</option>
                                     <option value="East">East</option>
@@ -459,12 +470,56 @@ if ($result->num_rows > 0) {
                 <!--Themes-->
                 <p class="card-title">clicking choose theme brings up list of themes<br>Each song can have up to three
                     themes</p><br>
-                   <input type="text" class="form-control" placeholder="theme1" name="theme1" style="text-align: center;">
-                    <button class="button m-2" style="width: 25%;"> Choose Theme</button><br>
-                    <input type="text" class="form-control" placeholder="theme2" name="theme2" style="text-align: center;">
-                    <button class="button m-2" style="width: 25%;"> Choose Theme</button><br>
-                    <input type="text" class="form-control" placeholder="theme3" name="theme3"  style="text-align: center;">
-                    <button class="button m-2" style="width: 25%;"> Choose Theme</button>
+                    <?php if(($row['theme1'] || $row['theme2'] || $row['theme3']) != NULL && !empty($row['theme1'] || $row['theme2'] || $row['theme3']) ) { ?>
+                    <input type="text" id="themeInput" class="form-control" placeholder="Themes" name="theme2" style="text-align: center;" value="<?php echo $row['theme1'] . ' , ' . $row['theme2'] . ', ' . $row['theme3']; ?>">
+                    <?php } else {?>
+                    <input type="text" id="themeInput" class="form-control" placeholder="Themes" name="theme2" style="text-align: center;" value="No themes in this song Please select">
+                    <?php } ?>
+                    <button type="button" class="btn btn-primary mt-2 mb-2" style="width: 30%;" data-toggle="modal" data-target="#themelist">Choose Themes</button>
+                    <div class="col-lg-2 col-md-3 col-sm-6">
+                        <!-- The Edit Modal -->
+                        <div class="modal fade" id="themelist">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <!-- Modal Header -->
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Choose Theme</h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <!-- Modal body -->
+                                    <div class="modal-body" style="text-align: left;">
+                                        <table class="table themeLoadTable">
+                                            <thead>
+                                            <?php
+                                                $sql = "SELECT * FROM `themes`";
+                                                $result = mysqli_query($conn, $sql);
+                                                if($result){
+                                                    while($row = mysqli_fetch_assoc($result)){
+                                                        echo "
+                                                        <tr>
+                                                            <td style='padding:0;'>
+                                                                <label class='row-label' style='margin:5px;'>
+                                                                    <input type='hidden' id='selectedIdsInput' name='selectedIds[]' value=''>
+                                                                    <input type='checkbox' class='theme_title_load' name='selectedThemes[]' id='".$row['id']."' value='".$row['theme_title']."'>
+                                                                    ".$row['theme_title']."
+                                                                </label>
+                                                            </td>
+                                                        </tr>                                                          
+                                                        ";
+                                                    }
+                                                }
+                                            ?>
+                                        </thead>
+                                        </table>
+                                    </div>
+                                    <!-- Modal footer -->
+                                    <div class="modal-footer">
+                                        <button type="button" id="choose-theme-btn" onclick="setSelectedThemes()" class="btn btn-danger btn-small">Choose Theme</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 <hr>
             </div>
                     <Br>
@@ -565,6 +620,23 @@ if ($result->num_rows > 0) {
                         text.style.display = "block";
                     } else {
                         text.style.display = "none";
+                    }
+                }
+
+                let selectedThemes = [];
+                let selectedIds = [];
+                function setSelectedThemes() {
+                    const selectedCheckboxes = document.querySelectorAll('input[type="checkbox"].theme_title_load:checked');
+                    // console.log(selectedCheckboxes)
+                    if (selectedCheckboxes.length <= 3) {
+                        selectedThemes = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+                        selectedIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.id);
+
+                        document.getElementById('themeInput').value = selectedThemes.join(', ');
+                        document.getElementById('selectedIdsInput').value = selectedIds.join(', ');
+
+                    } else {
+                        alert('You can select up to three themes.');
                     }
                 }
             </script>

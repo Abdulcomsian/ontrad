@@ -1,7 +1,7 @@
 <?php
 require_once ("config/db.php");
 require_once ("php/header.php");
-$songnum = mysqli_real_escape_string($conn, $_POST['songnum']);
+// $songnum = mysqli_real_escape_string($conn, $_POST['songnum']); This is not being added for Now
 $Stitle = mysqli_real_escape_string($conn, $_POST['title']);
 $songyear = mysqli_real_escape_string($conn, $_POST['songyear']);
 $songcomposer = mysqli_real_escape_string($conn, $_POST['songcomposer']);
@@ -11,7 +11,7 @@ $region = mysqli_real_escape_string($conn, $_POST['region']);
 $shortanno = mysqli_real_escape_string($conn, $_POST['shortanno']);
 $longanno = mysqli_real_escape_string($conn, $_POST['longanno']);
 $imageanno = mysqli_real_escape_string($conn, $_POST['imageanno']);
-  $video2 = mysqli_real_escape_string($conn, $_POST['video2']);
+$video2 = mysqli_real_escape_string($conn, $_POST['video2']);
 $imageFull = null; 
 $imageThumb = null;
 
@@ -150,9 +150,9 @@ if(isset($_FILES['uploadfile']) && $_FILES['uploadfile']['error'] == 0) {
   //     echo "Error uploading file. Please try again.";
   //   }
   // }
-  $theme1 = mysqli_real_escape_string($conn, $_POST['theme1']);
-  $theme2 = mysqli_real_escape_string($conn, $_POST['theme2']);
-  $theme3 = mysqli_real_escape_string($conn, $_POST['theme3']);
+  // $theme1 = mysqli_real_escape_string($conn, $_POST['theme1']);
+  // $theme2 = mysqli_real_escape_string($conn, $_POST['theme2']);
+  // $theme3 = mysqli_real_escape_string($conn, $_POST['theme3']);
   $fileToUpload = null;
   if(isset($_FILES['fileToUpload']) && $_FILES['fileToUpload']['error'] == 0) {
     // Get the file details
@@ -175,14 +175,45 @@ if(isset($_FILES['uploadfile']) && $_FILES['uploadfile']['error'] == 0) {
 
 
   // Prepare the SQL statement to insert data into the database
-$sql = "INSERT INTO newTable (songnum, Stitle, songyear, songcomposer, songartist, circa, region, shortanno, longanno, imageanno, imageFull, imageThumb, sheetanno, sheetmusic, audioanno, audio1, audio2, videoanno, video1, video2, theme1, theme2, theme3, fileToUpload) VALUES ('".$songnum."', '".$Stitle."', '".$songyear."', '".$songcomposer."', '".$songartist."', '".$circa."', '".$region."', '".$shortanno."', '".$longanno."', '".$imageanno."','".$imageFull."', '".$imageThumb."', '".$sheetanno."', '".$sheetmusic."', '".$audioanno."','".$audio1."','".$audio2."', '".$videoanno."','".$video1."','".$video2."', '".$theme1."','".$theme2."','".$theme3."','".$fileToUpload."')";
+  // if(isset($_POST['selectedIds'])){
+  //   echo "here"; 
+  //   $ids = $_POST['selectedIds'];
+  //   $idsArray = explode(",", $ids);
+  //   echo($idsArray);
+  // }else{
+  //   echo "not getting ids";
+  // }
 
-// Execute the SQL statement
-if (mysqli_query($conn, $sql)) {
-    echo "New record created successfully";
-} else {
+
+
+
+
+if(isset($_POST['title']) && !empty($_POST['title']) && isset($_POST['selectedThemes'])){
+  $selectedThemes = $_POST['selectedThemes'];
+  $sql = "INSERT INTO newtable (Stitle, songyear, songcomposer, songartist, circa, region, shortanno, longanno, imageanno, imageFull, imageThumb, sheetanno, sheetmusic, audioanno, audio1, audio2, videoanno, video1, video2, theme1, theme2, theme3, fileToUpload) VALUES ('".$Stitle."', '".$songyear."', '".$songcomposer."', '".$songartist."', '".$circa."', '".$region."', '".$shortanno."', '".$longanno."', '".$imageanno."','".$imageFull."', '".$imageThumb."', '".$sheetanno."', '".$sheetmusic."', '".$audioanno."','".$audio1."','".$audio2."', '".$videoanno."','".$video1."','".$video2."', '".$selectedThemes[0]."','".$selectedThemes[1]."','".$selectedThemes[2]."','".$fileToUpload."')";
+  if (mysqli_query($conn, $sql)) {
+      if(isset($_POST['selectedIds'])){
+        $ids = $_POST['selectedIds'];
+        $current_song_id = mysqli_insert_id($conn);
+        $idsArray = explode(",", $ids[0]);
+        // print_r($idsArray);
+        foreach($idsArray as $theme_id){
+          $sql1 = "INSERT INTO themes_songs (song_id, theme_id) VALUES ('$current_song_id', '$theme_id')";
+          $result1 = mysqli_query($conn, $sql1);
+        }
+        if($result1){
+          echo "<script> location.replace('songmanager.php?message=Song+Inserted+Successfully') </script>";
+        }
+      }else{
+        echo "not getting ids <br>";
+      }
+
+  } else {
     echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+  }
 }
+
+
 
 
 

@@ -202,22 +202,30 @@ require_once("php/header2.php");
                                               fill='#eceeef' dy='.3em'>ONTRAD IMAGE</text>
                                       </svg>";
                               
-                                  echo "
-                                            <div class='card-body'>
-                                                <h4>" . $row['Stitle'] . "</h4>
-                                                <small class='text-body-secondary'><strong>" . $row['circa'] . "</strong></small><small class='text-body-secondary'> " . $row['region'] . "</small>
-                                                <p class='card-text'>" . substr($row['shortanno'], 0, 50) . "...</p>
-                                            </div>
-                                            <div class='card-footer' style='background-color: white;'>
-                                            <div class='btn-group'>
-                                                <a href='song1.php?id=".base64_encode($row['ID'])."' class='btn btn-sm btn-outline-secondary'>View Page</a>
-                                                <a href='#' class='btn btn-sm btn-outline-secondary'>Play Song</a>
-                                            </div>
-                                            </div>
-                                          </div>
+                                      echo "
+                                      <div class='card-body'>
+                                          <h4>" . $row['Stitle'] . "</h4>
+                                          <small class='text-body-secondary'><strong>" . $row['circa'] . "</strong></small><small class='text-body-secondary'> " . $row['region'] . "</small>
+                                          <p class='card-text'>" . substr($row['shortanno'], 0, 50) . "...</p>
+                                      </div>
+                                      <div class='card-footer' style='background-color: white;'>
+                                      <div class='btn-group'>
+                                          <a href='song1.php?id=".base64_encode($row['ID'])."' class='btn btn-sm btn-outline-secondary'>View Page</a>
+                                        ";
+                                            if($row['audio1']!=NULL && !empty($row['audio1'])){                                        
+                                                echo "<button type='button' data-song-name='".$row['audio1']."' id='playSong' onclick='playAudio(event)' class='btn btn-sm btn-outline-secondary'>Play Song</button>";
+                                            }elseif($row['audio2']!=NULL && !empty($row['audio2'])){
+                                                echo "<button type='button' data-song-name='".$row['audio2']."' id='playSong' onclick='playAudio(event)' class='btn btn-sm btn-outline-secondary'>Play Song</button>";
+                                            }else{
+                                                echo " ";
+                                            }
+                              echo "
+                                      </div>
                                       </div>
                                   </div>
-                                  ";
+                              </div>
+                          </div>
+                          ";
                               }         
                             }else{
                                 echo "No songs Found";
@@ -254,7 +262,16 @@ require_once("php/header2.php");
                                             <div class='card-footer' style='background-color: white;'>
                                             <div class='btn-group'>
                                                 <a href='song1.php?id=".base64_encode($row['ID'])."' class='btn btn-sm btn-outline-secondary'>View Page</a>
-                                                <button type='button' id='playSong' onclick='playAudio()' class='btn btn-sm btn-outline-secondary'>Play Song</button>
+                                    ";
+                                        if($row['audio1']!=NULL && !empty($row['audio1'])){                                        
+                                            echo "<button type='button' data-song-name='".$row['audio1']."' id='playSong' onclick='playAudio(event)' class='btn btn-sm btn-outline-secondary'>Play Song</button>";
+                                        }elseif($row['audio2']!=NULL && !empty($row['audio2'])){
+                                            echo "<button type='button' data-song-name='".$row['audio2']."' id='playSong' onclick='playAudio(event)' class='btn btn-sm btn-outline-secondary'>Play Song</button>";
+                                        }else{
+                                            echo " ";
+                                        }
+
+                                    echo "
                                             </div>
                                             </div>
                                         </div>
@@ -548,28 +565,83 @@ require_once("php/header2.php");
         }
     }
 // playing Song
-    let play;
-    let pauseBtn = document.getElementById("pauseSong");
-    let playBtn = document.getElementById("playSong");
-    pauseBtn.style.display = 'none';
-    playBtn.style.display = 'block';
+    // let currentlyPlaying = null;
+    // let currentSongName = null;
+    // function playAudio(element) {
+    //     let mainElement = element.target;
+    //     let song_name = mainElement.dataset.songName;
+    //     // mainElement.textContent = "Play Song";
+    //     if (currentlyPlaying) {
+    //         if (currentSongName === song_name) {
+    //             if (currentlyPlaying.paused) {
+    //                 currentlyPlaying.play(); 
+    //                 mainElement.textContent = "Pause Song";
+    //             } else {
+    //                 currentlyPlaying.pause();
+    //                 mainElement.textContent = "Play Song";
+    //             }
+    //             return;
+    //         } else {
+    //             if(currentlyPlaying){
+    //                 mainElement.textContent = "Play Song";
+    //                 currentlyPlaying.pause();
+    //             }
+    //         }
+    //     }
 
-    function playAudio(){
-        if (!play) {
-            play = new Audio("audio/01 Five Mile Chase - Square Dance.mp3");
-            play.play();
-            pauseBtn.style.display = 'block';
-            playBtn.style.display = 'none';
+    //     let newAudio = new Audio("audio/" + song_name);
+    //     newAudio.play();
+        
+    //     currentlyPlaying = newAudio; 
+    //     currentSongName = song_name;
+    //     mainElement.textContent = "Pause Song";
+    // }
+
+
+ 
+    // let audioElements = {};
+
+    // function playAudio(element) {
+    //     let mainElement = element.target;
+    //     let song_name = mainElement.dataset.songName;
+
+    //     if (!audioElements[song_name]) {
+    //         audioElements[song_name] = new Audio("audio/" + song_name);
+    //     }
+
+    //     if (audioElements[song_name].paused) {
+    //         audioElements[song_name].play();
+    //         mainElement.textContent = "Pause Song";
+    //     } else {
+    //         audioElements[song_name].pause();
+    //         mainElement.textContent = "Play Song";
+    //     }
+    // }
+
+    let audioElements = {}; 
+
+    function playAudio(element) {
+        let mainElement = element.target;
+        let song_name = mainElement.dataset.songName;
+
+        if (!audioElements[song_name]) {
+            audioElements[song_name] = new Audio("audio/" + song_name);
+
+            audioElements[song_name].addEventListener("ended", function () {
+                mainElement.textContent = "Play Song";
+            });
+        }
+
+        if (audioElements[song_name].paused) {
+            audioElements[song_name].play();
+            mainElement.textContent = "Pause Song";
+        } else {
+            audioElements[song_name].pause();
+            mainElement.textContent = "Play Song";
         }
     }
 
-    function pauseAudio(){
-        if(play){
-            play.pause();
-            pauseBtn.style.display = 'none';
-            playBtn.style.display = 'block';
-        }  
-    }
+
 
 
     </script>

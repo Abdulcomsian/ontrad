@@ -52,11 +52,6 @@ if(isset($_GET['id'])){
     <!--Data-->
     <!--end of data-->
 
-    <?php
-     
-        
-    ?>
-
        <div class="introbox pt-4 ontragreen ontradbg1">
        <div style="text-align: center;">
             <h3><?php echo $row['theme_title'];?></h3>
@@ -115,7 +110,15 @@ if(isset($_GET['id'])){
                   <div class='card-footer' style='background-color:white;'>
                       <div class='btn-group mt-auto' >
                         <a href='song1.php?id=".base64_encode($row['ID'])."'  class='btn btn-sm btn-outline-secondary'>View Page</a>
-                        <a href='#'  class='btn btn-sm btn-outline-secondary'>Play Song</a>                
+                    ";
+                    if($row['audio1']!=NULL && !empty($row['audio1'])){                                        
+                        echo "<button type='button' data-song-name='".$row['audio1']."' id='playSong' onclick='playAudio(event)' class='btn btn-sm btn-outline-secondary'>Play Song</button>";
+                    }elseif($row['audio2']!=NULL && !empty($row['audio2'])){
+                        echo "<button type='button' data-song-name='".$row['audio2']."' id='playSong' onclick='playAudio(event)' class='btn btn-sm btn-outline-secondary'>Play Song</button>";
+                    }else{
+                        echo " ";
+                    }
+                    echo "          
                      </div>
                   </div>
                 </div>
@@ -200,6 +203,60 @@ if(isset($_GET['id'])){
                 }
             });
         }
+
+       // playing Song
+    // let currentlyPlaying = null;
+    // let currentSongName = null;
+    // function playAudio(element) {
+    //     let mainElement = element.target;
+    //     let song_name = mainElement.dataset.songName;
+    //     // mainElement.textContent = "Play Song";
+    //     if (currentlyPlaying) {
+    //         if (currentSongName === song_name) {
+    //             if (currentlyPlaying.paused) {
+    //                 currentlyPlaying.play(); 
+    //                 mainElement.textContent = "Pause Song";
+    //             } else {
+    //                 currentlyPlaying.pause();
+    //                 mainElement.textContent = "Play Song";
+    //             }
+    //             return;
+    //         } else {
+    //             if(currentlyPlaying){
+    //                 mainElement.textContent = "Play Song";
+    //                 currentlyPlaying.pause();
+    //             }
+    //         }
+    //     }
+
+    //     let newAudio = new Audio("audio/" + song_name);
+    //     newAudio.play();
+        
+    //     currentlyPlaying = newAudio; 
+    //     currentSongName = song_name;
+    //     mainElement.textContent = "Pause Song";
+    // }
+
+
+ 
+    let audioElements = {};
+
+    function playAudio(element) {
+        let mainElement = element.target;
+        let song_name = mainElement.dataset.songName;
+
+        if (!audioElements[song_name]) {
+            audioElements[song_name] = new Audio("audio/" + song_name);
+        }
+
+        if (audioElements[song_name].paused) {
+            audioElements[song_name].play();
+            mainElement.textContent = "Pause Song";
+        } else {
+            audioElements[song_name].pause();
+            mainElement.textContent = "Play Song";
+        }
+    }
     </script>
 
     

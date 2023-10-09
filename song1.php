@@ -191,12 +191,19 @@ if(isset($_GET['id'])){
         <h4 style="text-align: center;">Themes</h4>
         <div style="text-align: center;">
         <div class="row">
-            <!--theme1-->
-            <div class="col-sm-4 col-lg-4" style="text-align: center;" id="theme1">link to first theme</div>
-            <!--theme1-->
-            <div class="col-sm-4 col-lg-4" style="text-align: center;" id="theme1">link to second theme</div>
-            <!--theme1-->
-            <div class="col-sm-4 col-lg-4" style="text-align: center;" id="theme1">link to third theme</div>
+            <?php
+            $sql1 = "SELECT * FROM `themes_songs`
+            LEFT JOIN `themes` ON themes_songs.theme_id = themes.id
+            WHERE `song_id` = '$id' LIMIT 3";
+            $result1 = mysqli_query($conn, $sql1);
+
+            if(mysqli_num_rows($result1)>0){
+                while($row = mysqli_fetch_assoc($result1)){
+                    echo "<div class='col-sm-4 col-lg-4' style='text-align: center;'' id='theme1'><a href='theme1.php?id=".base64_encode($row['id'])."'> ".$row['theme_title']."</a></div>";
+                }
+            }
+
+            ?>
         </div>
         <br>
         <hr>

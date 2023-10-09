@@ -1,6 +1,15 @@
 <?php
 require_once("config/db.php");
 require_once("php/header.php");
+if(isset($_GET['message'])){
+    $message = $_GET['message'];
+    echo " 
+    <script>
+    alert(' $message ')
+    location.replace('songmanager.php');
+    </script>
+    ";
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,23 +49,24 @@ require_once("php/header.php");
             <div class="d-none" style="color: grey;">...search results</div>
             <!--title and date-->
             <div class="row input-clr py-2 mt-5">
-               <!-- THIS IS NOT BEING ADDED FOR NOW <div class="col-lg-2 col-md-4  col-sm-2 ">
+                <!-- THIS IS NOT BEING ADDED FOR NOW <div class="col-lg-2 col-md-4  col-sm-2 ">
                     <input type="text" class="form-control" placeholder="catalog number" name="songnum">
                 </div> -->
                 <div class="col-lg-8 col-md-4 col-sm-8">
-                    <h4><input type="text" class="form-control " placeholder="Song Title" name="title"></h4>
+                    <h4><input type="text" class="form-control " placeholder="Song Title" name="title" required></h4>
                 </div>
                 <div class="col-lg-2 col-md-4 col-sm-2">
-                    <input type="text" class="form-control" placeholder="Year" name="songyear">
+                    <input type="text" class="form-control" placeholder="Year" name="songyear" required>
                 </div>
             </div>
             <!--Composer/artist-->
             <div class="row input-clr py-2">
                 <div class="col-sm-6">
-                    <h3><input type="text" class="form-control " placeholder="Composer" name="songcomposer"></h3>
+                    <h3><input type="text" class="form-control " placeholder="Composer" name="songcomposer" required>
+                    </h3>
                 </div>
                 <div class="col-sm-6">
-                    <input type="text" class="form-control" placeholder="Aritst" name="songartist">
+                    <input type="text" class="form-control" placeholder="Aritst" name="songartist" required>
                 </div>
             </div>
             <!--Year Checkbox-->
@@ -64,7 +74,7 @@ require_once("php/header.php");
                 <div class="row input-clr">
                     <div class="col">
                         <select class="form-select form-select-sm mb-1" aria-label=".form-select-sm example"
-                            name="circa">
+                            name="circa" required>
                             <option value="">CIRCA</option>
                             <option value="1750-1799">1750-1799</option>
                             <option value="1800-1849">1800-1849</option>
@@ -75,7 +85,7 @@ require_once("php/header.php");
                     </div>
                     <div class="col">
                         <select class="form-select form-select-sm mb-1" aria-label=".form-select-sm example"
-                            name="region">
+                            name="region" required>
                             <option value="">REGION</option>
                             <option value="East">East</option>
                             <option value="South Central">South Central</option>
@@ -99,7 +109,7 @@ require_once("php/header.php");
 
             <div class="row input-clr">
                 <textarea class="form-control m-2 mb-3" rows="2" id="comment" placeholder="Short Annotation"
-                    name="shortanno"></textarea>
+                    name="shortanno" required></textarea>
                 <textarea class="form-control m-2 mb-2" rows="5" id="comment" placeholder="Long Annotation"
                     name="longanno"></textarea>
             </div>
@@ -125,7 +135,7 @@ require_once("php/header.php");
                                     <div class="form-group upload-btn-wrapper">
                                         <button class="btn btn-primary">Choose File</button>
                                         <input class="form-control" id="image_input" type="file" name="uploadfile"
-                                            value="" />
+                                            value="" required>
                                     </div>
                                     <div class="form-group">
                                     </div>
@@ -191,7 +201,7 @@ require_once("php/header.php");
                             <h4 class="label"> <label>Sheet Music</label> </h4>
                             <div style="width: 100%; height: auto; border-style: solid; border-color:blue;">
                                 <img src="images/sheet1.png" alt="Lights" style="width:100%; height:auto;"
-                                    id="sheet_preview">
+                                    id="sheet_preview" required>
                             </div>
                             <div class="row">
                                 <div class="col-sm-10 p-2">
@@ -384,16 +394,63 @@ require_once("php/header.php");
             <br>
             <hr>
 
+
+
+            <!-- Theme Selection Section  -->
+
             <div class="container-fluid" style="width: 60%; text-align:center">
                 <!--Themes-->
                 <p class="card-title">clicking choose theme brings up list of themes<br>Each song can have up to three
                     themes</p><br>
-                   <input type="text" class="form-control" placeholder="theme1" name="theme1" style="text-align: center;">
-                    <button class="button m-2" style="width: 25%;"> Choose Theme</button><br>
-                    <input type="text" class="form-control" placeholder="theme2" name="theme2" style="text-align: center;">
-                    <button class="button m-2" style="width: 25%;"> Choose Theme</button><br>
-                    <input type="text" class="form-control" placeholder="theme3" name="theme3"  style="text-align: center;">
-                    <button class="button m-2" style="width: 25%;"> Choose Theme</button>
+
+                   
+                    <input type="text" id="themeInput" class="form-control" placeholder="Themes" name="theme2" style="text-align: center;" value="">
+                    <button type="button" class="btn btn-primary mt-2 mb-2" style="width: 30%;" data-toggle="modal" data-target="#themelist">Choose Themes</button>
+                    <div class="col-lg-2 col-md-3 col-sm-6">
+                        <!-- The Edit Modal -->
+                        <div class="modal fade" id="themelist">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <!-- Modal Header -->
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Choose Theme</h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <!-- Modal body -->
+                                    <div class="modal-body" style="text-align: left;">
+                                        <table class="table themeLoadTable">
+                                            <thead>
+                                            <?php
+                                                $sql = "SELECT * FROM `themes`";
+                                                $result = mysqli_query($conn, $sql);
+                                                if($result){
+                                                    while($row = mysqli_fetch_assoc($result)){
+                                                        echo "
+                                                        <tr>
+                                                            <td style='padding:0;'>
+                                                                <label class='row-label' style='margin:5px;'>
+                                                                    <input type='hidden' id='selectedIdsInput' name='selectedIds[]' value=''>
+                                                                    <input type='checkbox' class='theme_title_load' name='selectedThemes[]' id='".$row['id']."' value='".$row['theme_title']."'>
+                                                                    ".$row['theme_title']."
+                                                                </label>
+                                                            </td>
+                                                        </tr>                                                          
+                                                        ";
+                                                    }
+                                                }
+                                            ?>
+                                        </thead>
+                                        </table>
+                                    </div>
+                                    <!-- Modal footer -->
+                                    <div class="modal-footer">
+                                        <button type="button" id="choose-theme-btn" onclick="setSelectedThemes()" class="btn btn-danger btn-small">Choose Theme</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 <hr>
             </div>
             <!-- THIS IS NOT BEING ADDED FOR NOW
@@ -457,14 +514,14 @@ require_once("php/header.php");
                 </div>
             <input type="submit" value="submit" name="submit">-->
 
-                <hr>
-                <div style="text-align: center;">
+            <hr>
+            <div style="text-align: center;">
                 <h4>Create page with media in database<br></h4>
-                <button type="submit" class="btn btn-primary" input type="submit" form="uploadsong"
+                <button type="submit" class="btn btn-primary" id="upload-song" input type="submit" form="uploadsong"
                     value="Submit">UPLOAD PAGE</button>
-                </div>
+            </div>
         </div>
-    <!--end of container-->
+        <!--end of container-->
     </form>
     <hr>
     <br>
@@ -512,7 +569,31 @@ require_once("php/header.php");
             }
 
         })
+
+
     })
+
+    let selectedThemes = [];
+    let selectedIds = [];
+    function setSelectedThemes() {
+        const selectedCheckboxes = document.querySelectorAll('input[type="checkbox"].theme_title_load:checked');
+        // console.log(selectedCheckboxes)
+        if (selectedCheckboxes.length <= 3) {
+            selectedThemes = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+            selectedIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.id);
+
+            document.getElementById('themeInput').value = selectedThemes.join(', ');
+            document.getElementById('selectedIdsInput').value = selectedIds.join(', ');
+
+        } else {
+            alert('You can select up to three themes.');
+        }
+    }
+
+    
+
+
+
     </script>
 
 </body>

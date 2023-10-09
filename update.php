@@ -182,9 +182,7 @@ if(isset($_FILES['uploadfile']) && $_FILES['uploadfile']['error'] == 0) {
   // else{
   //   $video2 = $oldvideo2;
   // }
-  $theme1 = mysqli_real_escape_string($conn, $_POST['theme1']);
-  $theme2 = mysqli_real_escape_string($conn, $_POST['theme2']);
-  $theme3 = mysqli_real_escape_string($conn, $_POST['theme3']);
+
   $fileToUpload = null;
   $oldfileToUpload = mysqli_real_escape_string($conn, $_POST['old_fileToUpload']);
   if(isset($_FILES['fileToUpload']) && $_FILES['fileToUpload']['error'] == 0) 
@@ -211,42 +209,62 @@ if(isset($_FILES['uploadfile']) && $_FILES['uploadfile']['error'] == 0) {
     $fileToUpload = $oldfileToUpload;
   }
 
+  if(isset($_POST['title']) && !empty($_POST['title']) && isset($_POST['selectedThemes'])){
+    $selectedThemes = $_POST['selectedThemes'];
 
-$sql = "UPDATE newTable SET 
-songnum='$songnum',
-Stitle='$Stitle',
-songyear='$songyear', 
-songcomposer='$songcomposer', 
-songartist='$songartist', 
-circa='$circa', 
-region='$region',
-shortanno='$shortanno',
-longanno='$longanno',
-imageanno='$imageanno',
-imageFull='$imageFull',
-imageThumb='$imageThumb',
-sheetanno='$sheetanno',
-sheetmusic='$sheetmusic',
-audioanno='$audioanno',
-audio1='$audio1',
-audio2='$audio2',
-videoanno='$videoanno',
-video1='$video1',
-video2='$video2',
-theme1='$theme1',
-theme2='$theme2',
-theme3='$theme3',
-fileToUpload='$fileToUpload',
--- imageThumb='$fileToUpload',
-checkbox=$checkbox
+    $sql = "UPDATE newTable SET 
+    songnum='$songnum',
+    Stitle='$Stitle',
+    songyear='$songyear', 
+    songcomposer='$songcomposer', 
+    songartist='$songartist', 
+    circa='$circa', 
+    region='$region',
+    shortanno='$shortanno',
+    longanno='$longanno',
+    imageanno='$imageanno',
+    imageFull='$imageFull',
+    imageThumb='$imageThumb',
+    sheetanno='$sheetanno',
+    sheetmusic='$sheetmusic',
+    audioanno='$audioanno',
+    audio1='$audio1',
+    audio2='$audio2',
+    videoanno='$videoanno',
+    video1='$video1',
+    video2='$video2',
+    theme1='$selectedThemes[0]',
+    theme2='$selectedThemes[1]',
+    theme3='$selectedThemes[2]',
+    -- fileToUpload='$fileToUpload',
+    -- imageThumb='$fileToUpload',
+    checkbox=$checkbox
 
-WHERE ID=$id";
+    WHERE ID=$id";
 
-if ($conn->query($sql) === TRUE) 
-{
-    echo "Record updated successfully";
-    echo "- Put a button here and make the page look nice - ";
-} else {
-    echo "Error updating record: " . $conn->error;
+    if ($conn->query($sql) === TRUE) 
+    {
+      if(isset($_POST['selectedIds'])){
+        $ids = $_POST['selectedIds'];
+        $current_song_id = $_POST['id'];
+        $idsArray = explode(",", $ids[0]);
+        $deleteSql = "DELETE FROM `themes_songs` WHERE `song_id` = '$current_song_id'";
+        $deleteResult = mysqli_query($conn, $deleteSql);
+        // print_r($idsArray);
+        foreach($idsArray as $theme_id){
+          $sql1 = "INSERT INTO `themes_songs` (song_id, theme_id) VALUES ('$current_song_id', '$theme_id')";
+          $result1 = mysqli_query($conn, $sql1);
+        }
+        if($result1){
+          echo "<script> location.replace('edit.php?message=Song+Updated+Successfully&id=".$id."') </script>";
+        }
+    } else {
+        echo "Error updating record: " . $conn->error;
+    }
+  }
+
+}else{
+  echo "<script> location.replace('edit.php?message=Song+Updated+Successfully&id=".$id."') </script>";
 }
+
 ?>
