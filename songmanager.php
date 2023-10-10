@@ -135,7 +135,7 @@ if(isset($_GET['message'])){
                                     <div class="form-group upload-btn-wrapper">
                                         <button class="btn btn-primary">Choose File</button>
                                         <input class="form-control" id="image_input" type="file" name="uploadfile"
-                                            value="" required>
+                                            value="">
                                     </div>
                                     <div class="form-group">
                                     </div>
@@ -444,7 +444,7 @@ if(isset($_GET['message'])){
                                     </div>
                                     <!-- Modal footer -->
                                     <div class="modal-footer">
-                                        <button type="button" id="choose-theme-btn" onclick="setSelectedThemes()" class="btn btn-danger btn-small">Choose Theme</button>
+                                        <button type="button" id="choose-theme-btn" onclick="setSelectedThemes()" class="btn btn-danger btn-small" data-dismiss="modal" aria-hidden="true">Choose Theme</button>
                                     </div>
                                 </div>
                             </div>

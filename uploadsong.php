@@ -190,7 +190,7 @@ if(isset($_FILES['uploadfile']) && $_FILES['uploadfile']['error'] == 0) {
 
 if(isset($_POST['title']) && !empty($_POST['title']) && isset($_POST['selectedThemes'])){
   $selectedThemes = $_POST['selectedThemes'];
-  $sql = "INSERT INTO newtable (Stitle, songyear, songcomposer, songartist, circa, region, shortanno, longanno, imageanno, imageFull, imageThumb, sheetanno, sheetmusic, audioanno, audio1, audio2, videoanno, video1, video2, theme1, theme2, theme3, fileToUpload) VALUES ('".$Stitle."', '".$songyear."', '".$songcomposer."', '".$songartist."', '".$circa."', '".$region."', '".$shortanno."', '".$longanno."', '".$imageanno."','".$imageFull."', '".$imageThumb."', '".$sheetanno."', '".$sheetmusic."', '".$audioanno."','".$audio1."','".$audio2."', '".$videoanno."','".$video1."','".$video2."', '".$selectedThemes[0]."','".$selectedThemes[1]."','".$selectedThemes[2]."','".$fileToUpload."')";
+  $sql = "INSERT INTO newtable (Stitle, songyear, songcomposer, songartist, circa, region, shortanno, longanno, imageanno, imageFull, imageThumb, sheetanno, sheetmusic, audioanno, audio1, audio2, videoanno, video1, video2, theme1, theme2, theme3, fileToUpload) VALUES ('$Stitle', '$songyear', '$songcomposer', '$songartist', '$circa', '$region', '$shortanno', '$longanno', '$imageanno','$imageFull', '$imageThumb', '$sheetanno', '$sheetmusic', '$audioanno','$audio1','$audio2', '$videoanno','$video1','$video2', '$selectedThemes[0]','$selectedThemes[1]','$selectedThemes[2]','$fileToUpload')";
   if (mysqli_query($conn, $sql)) {
       if(isset($_POST['selectedIds'])){
         $ids = $_POST['selectedIds'];

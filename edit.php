@@ -28,7 +28,7 @@ if ($result->num_rows > 0) {
         <html lang="en">
 
         <head>
-            <title>Song Manager </title>
+            <title>Edit Song</title>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -56,6 +56,7 @@ if ($result->num_rows > 0) {
         <body id="songmanager">
             version 4.5 <!--start-->
             <form action="update.php" method="post" enctype="multipart/form-data" id="uploadsong">
+            
                 <div class="container-fluid pt-3" style="max-width: 80%;">
                     <div class="row d-none"> <!--search and load-->
                         <div class="col-8">
@@ -470,11 +471,25 @@ if ($result->num_rows > 0) {
                 <!--Themes-->
                 <p class="card-title">clicking choose theme brings up list of themes<br>Each song can have up to three
                     themes</p><br>
-                    <?php if(($row['theme1'] || $row['theme2'] || $row['theme3']) != NULL && !empty($row['theme1'] || $row['theme2'] || $row['theme3']) ) { ?>
-                    <input type="text" id="themeInput" class="form-control" placeholder="Themes" name="theme2" style="text-align: center;" value="<?php echo $row['theme1'] . ' , ' . $row['theme2'] . ', ' . $row['theme3']; ?>">
-                    <?php } else {?>
-                    <input type="text" id="themeInput" class="form-control" placeholder="Themes" name="theme2" style="text-align: center;" value="No themes in this song Please select">
-                    <?php } ?>
+                    <?php 
+                    $sql2 = "SELECT *
+                    FROM themes_songs
+                    LEFT JOIN themes
+                    ON themes_songs.theme_id = themes.id WHERE song_id = '$id' LIMIT 3";
+                    $result2 = mysqli_query($conn, $sql2);
+                    $preselectedThemesIds = [];
+                    $preselectedThemesNames = [];
+                    // $row = mysqli_fetch_assoc($result2);
+                    echo " <input type='text' id='themeInput' class='form-control' placeholder='Themes' name='theme2' style='text-align: center;'  value='";
+                        while($row2 = mysqli_fetch_assoc($result2)){
+                            echo $row2['theme_title'] . ", ";
+                            $preselectedThemesIds[] = $row2['theme_id'];
+                            $preselectedThemesNames[] = $row2['theme_title'];
+                        }
+                    echo "'>";
+                    // echo $preselectedThemesNames[0];
+                    ?>
+                    <input type="hidden" id="selectedIdsInput" name="selectedIds[]" value="">
                     <button type="button" class="btn btn-primary mt-2 mb-2" style="width: 30%;" data-toggle="modal" data-target="#themelist">Choose Themes</button>
                     <div class="col-lg-2 col-md-3 col-sm-6">
                         <!-- The Edit Modal -->
@@ -499,7 +514,7 @@ if ($result->num_rows > 0) {
                                                         <tr>
                                                             <td style='padding:0;'>
                                                                 <label class='row-label' style='margin:5px;'>
-                                                                    <input type='hidden' id='selectedIdsInput' name='selectedIds[]' value=''>
+                                                                    
                                                                     <input type='checkbox' class='theme_title_load' name='selectedThemes[]' id='".$row['id']."' value='".$row['theme_title']."'>
                                                                     ".$row['theme_title']."
                                                                 </label>
@@ -514,7 +529,7 @@ if ($result->num_rows > 0) {
                                     </div>
                                     <!-- Modal footer -->
                                     <div class="modal-footer">
-                                        <button type="button" id="choose-theme-btn" onclick="setSelectedThemes()" class="btn btn-danger btn-small">Choose Theme</button>
+                                        <button type="button" id="choose-theme-btn" onclick="setSelectedThemes()" class="btn btn-danger btn-small" data-dismiss="modal" aria-hidden="true">Choose Theme</button>
                                     </div>
                                 </div>
                             </div>
@@ -545,6 +560,7 @@ if ($result->num_rows > 0) {
             </form>
             <script type="text/javascript">
                 jQuery(document).ready(function() {
+
                     const fileInput = document.getElementById('video1');
                     const progressBar = document.getElementById('progressBar');
 
@@ -607,6 +623,8 @@ if ($result->num_rows > 0) {
                         }
 
                     })
+
+                
                 })
 
                 function myFunction() {
@@ -623,22 +641,64 @@ if ($result->num_rows > 0) {
                     }
                 }
 
+                // let selectedThemes = [];
+                // let selectedIds = [];
+                
+                // function setSelectedThemes() {
+                //     var selectedCheckboxes = document.querySelectorAll('input[type="checkbox"].theme_title_load:checked');
+                //     if (selectedCheckboxes.length <= 3) {
+                //         selectedThemes = selectedThemes.concat(Array.from(selectedCheckboxes).map(checkbox => checkbox.value));
+                //         selectedIds = selectedIds.concat(Array.from(selectedCheckboxes).map(checkbox => checkbox.id));
+
+                //         document.getElementById('themeInput').value = selectedThemes.join(', ');
+                //         document.getElementById('selectedIdsInput').value = selectedIds.join(', ');
+                //     } else {
+                //         alert('You can select up to three themes.');
+                //     }
+                // }
+
+                const preselectedThemeIds = <?php echo json_encode($preselectedThemesIds); ?>;
+                let selectedIds = preselectedThemeIds;
                 let selectedThemes = [];
-                let selectedIds = [];
-                function setSelectedThemes() {
+
+                // Function to update the input field with the current selected IDs
+                function updateInputField() {
+                    document.getElementById('selectedIdsInput').value = selectedIds.join(', ');
+                    
+                }
+
+                // Function to handle checkbox interactions
+                function handleCheckboxChange() {
                     const selectedCheckboxes = document.querySelectorAll('input[type="checkbox"].theme_title_load:checked');
-                    // console.log(selectedCheckboxes)
+                    
+                    // Check if the user is trying to select more than three themes
                     if (selectedCheckboxes.length <= 3) {
-                        selectedThemes = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
                         selectedIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.id);
+                        selectedThemes = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+
 
                         document.getElementById('themeInput').value = selectedThemes.join(', ');
-                        document.getElementById('selectedIdsInput').value = selectedIds.join(', ');
-
                     } else {
-                        alert('You can select up to three themes.');
+                        alert("You can select up to three themes.");
+                        this.checked = false; 
                     }
+                    updateInputField();
                 }
+
+                window.addEventListener('load', function() {
+                updateInputField();
+                const checkboxes = document.querySelectorAll('input[type="checkbox"].theme_title_load');
+                
+                checkboxes.forEach(checkbox => {
+                    // Check if the checkbox's ID is in preselectedThemeIds and mark it as checked if found
+                    if (preselectedThemeIds.includes(checkbox.id)) {
+                        checkbox.checked = true;
+                    }
+
+                    checkbox.addEventListener('change', handleCheckboxChange);
+                });
+            });
+               
             </script>
         </body>
 

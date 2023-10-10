@@ -2,7 +2,7 @@
 require_once ("config/db.php");
 require_once ("php/header.php");
 $id = $_POST['id'];
-$songnum = mysqli_real_escape_string($conn, $_POST['songnum']);
+// $songnum = mysqli_real_escape_string($conn, $_POST['songnum']);
 $Stitle = mysqli_real_escape_string($conn, $_POST['title']);
 $songyear = mysqli_real_escape_string($conn, $_POST['songyear']);
 $songcomposer = mysqli_real_escape_string($conn, $_POST['songcomposer']);
@@ -20,7 +20,8 @@ $old_thumb= mysqli_real_escape_string($conn, $_POST['thumb_image']);
 $checkbox= mysqli_real_escape_string($conn, $_POST['checkbox']);
 
 
-if(isset($_FILES['uploadfile']) && $_FILES['uploadfile']['error'] == 0) {
+  if(isset($_FILES['uploadfile']) && $_FILES['uploadfile']['error'] == 0) {
+  echo "here";
     // Get the file details
     $file_name = $_FILES['uploadfile']['name'];
     $file_size = $_FILES['uploadfile']['size'];
@@ -41,6 +42,7 @@ if(isset($_FILES['uploadfile']) && $_FILES['uploadfile']['error'] == 0) {
   else{
     $imageFull = $old_file;
   }
+
   if(isset($_FILES['imagethumb']) && $_FILES['imagethumb']['error'] == 0) {
     // Get the file details
     $file_name = $_FILES['imagethumb']['name'];
@@ -62,9 +64,11 @@ if(isset($_FILES['uploadfile']) && $_FILES['uploadfile']['error'] == 0) {
   else{
     $imageThumb = $old_thumb;
   }
+
   $sheetanno = mysqli_real_escape_string($conn, $_POST['sheetanno']);
   $sheetmusic = null;
   $oldmusic = mysqli_real_escape_string($conn, $_POST['sheetmusic_image']);
+
   if(isset($_FILES['sheetmusic']) && $_FILES['sheetmusic']['error'] == 0) 
   {
     // Get the file details
@@ -88,8 +92,9 @@ if(isset($_FILES['uploadfile']) && $_FILES['uploadfile']['error'] == 0) {
     $sheetmusic = $oldmusic;
   }
   $audioanno = mysqli_real_escape_string($conn, $_POST['audioanno']);
-  $oldaudio1 = mysqli_real_escape_string($conn, $_POST['old_audio1']);
   $audio1 = null;
+  $oldaudio1 = mysqli_real_escape_string($conn, $_POST['old_audio1']);
+
   if(isset($_FILES['audio1']) && $_FILES['audio1']['error'] == 0) {
     // Get the file details
     $file_name = $_FILES['audio1']['name'];
@@ -111,8 +116,11 @@ if(isset($_FILES['uploadfile']) && $_FILES['uploadfile']['error'] == 0) {
   else{
     $audio1 = $oldaudio1;
   }
+
+
   $audio2 = null;
   $oldaudio2 = mysqli_real_escape_string($conn, $_POST['old_audio2']);
+
   if(isset($_FILES['audio2']) && $_FILES['audio2']['error'] == 0) 
   {
     // Get the file details
@@ -133,8 +141,9 @@ if(isset($_FILES['uploadfile']) && $_FILES['uploadfile']['error'] == 0) {
     }
   }
   else{
-    $audio1 = $oldaudio2;
+    $audio2 = $oldaudio2;
   }
+
   $videoanno = mysqli_real_escape_string($conn, $_POST['videoanno']);
   $oldvideo1 = mysqli_real_escape_string($conn, $_POST['old_video1']);
   $video1 = null;
@@ -209,42 +218,44 @@ if(isset($_FILES['uploadfile']) && $_FILES['uploadfile']['error'] == 0) {
     $fileToUpload = $oldfileToUpload;
   }
 
-  if(isset($_POST['title']) && !empty($_POST['title']) && isset($_POST['selectedThemes'])){
-    $selectedThemes = $_POST['selectedThemes'];
 
-    $sql = "UPDATE newTable SET 
-    songnum='$songnum',
-    Stitle='$Stitle',
-    songyear='$songyear', 
-    songcomposer='$songcomposer', 
-    songartist='$songartist', 
-    circa='$circa', 
-    region='$region',
-    shortanno='$shortanno',
-    longanno='$longanno',
-    imageanno='$imageanno',
-    imageFull='$imageFull',
-    imageThumb='$imageThumb',
-    sheetanno='$sheetanno',
-    sheetmusic='$sheetmusic',
-    audioanno='$audioanno',
-    audio1='$audio1',
-    audio2='$audio2',
-    videoanno='$videoanno',
-    video1='$video1',
-    video2='$video2',
-    theme1='$selectedThemes[0]',
-    theme2='$selectedThemes[1]',
-    theme3='$selectedThemes[2]',
-    -- fileToUpload='$fileToUpload',
-    -- imageThumb='$fileToUpload',
-    checkbox=$checkbox
 
-    WHERE ID=$id";
+  
+  if(isset($_POST['title']) && !empty($_POST['title'])){
+  // echo $_POST['title'];
+  $selectedThemes = $_POST['selectedThemes'];
 
-    if ($conn->query($sql) === TRUE) 
+  $sql = "UPDATE newtable SET 
+  Stitle='$Stitle',
+  songyear='$songyear', 
+  songcomposer='$songcomposer', 
+  songartist='$songartist', 
+  circa='$circa', 
+  region='$region',
+  shortanno='$shortanno',
+  longanno='$longanno',
+  imageanno='$imageanno',
+  imageFull='$imageFull',
+  imageThumb='$imageThumb',
+  sheetanno='$sheetanno',
+  sheetmusic='$sheetmusic',
+  audioanno='$audioanno',
+  audio1='$audio1',
+  audio2='$audio2',
+  videoanno='$videoanno',
+  video1='$video1',
+  video2='$video2',
+  theme1='$selectedThemes[0]',
+  theme2='$selectedThemes[1]',
+  theme3='$selectedThemes[2]',
+  fileToUpload='$fileToUpload'
+  WHERE ID='$id'";
+
+  $result = mysqli_query($conn, $sql);
+
+    if ($result) 
     {
-      if(isset($_POST['selectedIds'])){
+      if(isset($_POST['selectedIds']) && !empty($_POST['selectedIds'])){
         $ids = $_POST['selectedIds'];
         $current_song_id = $_POST['id'];
         $idsArray = explode(",", $ids[0]);
@@ -262,9 +273,6 @@ if(isset($_FILES['uploadfile']) && $_FILES['uploadfile']['error'] == 0) {
         echo "Error updating record: " . $conn->error;
     }
   }
-
-}else{
-  echo "<script> location.replace('edit.php?message=Song+Updated+Successfully&id=".$id."') </script>";
 }
 
 ?>
