@@ -92,8 +92,6 @@ if(isset($_GET['id'])){
             echo "
             <div class='col-sm-4' style=' text-align: center;'><img src='images/".$row['imageThumb']."' style='width: 100%; max-width: 250px;'>
             ";
-        }else{
-            echo "";
         }
         ?>
             </div>
@@ -102,21 +100,20 @@ if(isset($_GET['id'])){
   <!--Music-->
     <div class="row pt-3">
         <div class="col-sm-6" style="text-align: center;">
-        <h4>Music</h4>
+        
         <!--Audio-->
         <div style="margin-top: 0%; margin-bottom: 1%;">
             <div style="padding: 0% 3%">
             <?php
             if($row['audio1']!=NULL && !empty($row['audio1'])){
                 echo "
+                <h4>Music</h4>
                 <p class='blurbtext'>".$row['audioanno']."</p>
             <audio controls style='text-align: center;'>
                 <source src='audio/".$row['audio1']."' type='audio/mpeg' id='audio1'>
                 Your browser does not support the audio element.
             </audio>
                 ";
-            }else{
-                echo " ";
             }
             ?>
             
@@ -132,29 +129,40 @@ if(isset($_GET['id'])){
                 Your browser does not support the audio element.
             </audio>
                 ";
-            }else{
-                echo " ";
             }
             ?>
            
             </div>
         </div>
-        <h4>Video</h4>
+        
         <!--Video-->
         <div class="container-fluid">
             <div class="embed-responsive embed-responsive-16by9">
             <?php
-            if($row['video2']!=NULL && !empty($row['video2'])){
-                echo "
-                <iframe width='560' height='315' src='".$row['video2']."' title='YouTube video player' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowfullscreen></iframe>
+            if(($row['audio1'] || $row['audio2']) != NULL && !empty($row['audio1'] || $row['audio2'])){
+                if($row['video2']!=NULL && !empty($row['video2'])){
+                    echo "
+                    <h4>Video</h4>
+                    <iframe width='560' height='315' src='".$row['video2']."' title='YouTube video player' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowfullscreen></iframe>
+                    </div>
+                    <div class=blurbtext'>
+                    ".$row['videoanno']."
+                    </div>
+                    ";
+                }else{
+                echo " <iframe width='560' height='315' src='".$row['video2']."' title='YouTube video player' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowfullscreen></iframe>
                 </div>
                 <div class=blurbtext'>
-                ".$row['videoanno']."
-                </div>
-                ";
-            }else{
-                echo " ";
+                        </div>";
             }
+        }else{
+            echo " <iframe width='560' height='315' src='".$row['video2']."' title='YouTube video player' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowfullscreen></iframe>
+            </div>
+            <div class=blurbtext'>
+                    </div>";
+        }
+
+
             ?>
             
         </div>
@@ -170,8 +178,6 @@ if(isset($_GET['id'])){
                 </a>
             </div>
             ";
-        }else{
-            echo "No Image Found";
         }
         ?>
        
@@ -188,16 +194,19 @@ if(isset($_GET['id'])){
   <!--theme row-->
   <hr>
     <div class="container-fluid">
-        <h4 style="text-align: center;">Themes</h4>
-        <div style="text-align: center;">
-        <div class="row">
+       
             <?php
             $sql1 = "SELECT * FROM `themes_songs`
             LEFT JOIN `themes` ON themes_songs.theme_id = themes.id
-            WHERE `song_id` = '$id' LIMIT 3";
+            WHERE `song_id` = '$id' AND `status` = 'Featured' LIMIT 3";
             $result1 = mysqli_query($conn, $sql1);
 
             if(mysqli_num_rows($result1)>0){
+                echo "
+                <h4 style='text-align: center;'>Themes</h4>
+                <div style='text-align: center;'>
+                <div class='row'>
+                ";
                 while($row = mysqli_fetch_assoc($result1)){
                     echo "<div class='col-sm-4 col-lg-4' style='text-align: center;'' id='theme1'><a href='theme1.php?id=".base64_encode($row['id'])."'> ".$row['theme_title']."</a></div>";
                 }
