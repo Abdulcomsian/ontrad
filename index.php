@@ -191,8 +191,9 @@ require_once("php/header2.php");
                                       <div class='col'>
                                           <div class='card shadow-sm' style='height: 620px !important;'>
                                               <div class='d-flex flex-column justify-content-between' style='height: 100%;'>";
-                              
-                                  echo $row['imageThumb'] != NULL || !empty($row['imageThumb'])
+                                $path = 'images/';
+                                $completePath = $path.$row['imageThumb'];
+                                  echo ($row['imageThumb'] != NULL || !empty($row['imageThumb'])) && file_exists($completePath)
                                       ? "<img src='images/" . $row['imageThumb'] . "' style='max-height: 200px;' alt='Image Not found'>"
                                       : "<svg class='bd-placeholder-img card-img-top' width='100%' height='200px'
                                           xmlns='http://www.w3.org/2000/svg' role='img' aria-label='Placeholder: Thumbnail'
@@ -242,8 +243,9 @@ require_once("php/header2.php");
                                     <div class='col'>
                                         <div class='card shadow-sm' style='height: 600px !important;'>
                                             <div class='d-flex flex-column justify-content-between' style='height: 100%;'>";
-                            
-                                echo $row['imageThumb'] != NULL || !empty($row['imageThumb'])
+                                 $path = 'images/';
+                                 $completePath = $path.$row['imageThumb'];
+                                echo ($row['imageThumb'] != NULL || !empty($row['imageThumb'])) && file_exists($completePath)
                                     ? "<img src='images/" . $row['imageThumb'] . "' style='max-height: 200px;' alt='Image Not found'>"
                                     : "<svg class='bd-placeholder-img card-img-top' width='100%' height='200px'
                                         xmlns='http://www.w3.org/2000/svg' role='img' aria-label='Placeholder: Thumbnail'
@@ -395,19 +397,23 @@ require_once("php/header2.php");
                       $page = 1;
                     }
                     $offset = ($page-1)*$limit;
+                    
 
                         $sql = "SELECT * FROM `themes` WHERE `status` = 'Featured' LIMIT {$offset}, {$limit}";
                         $result = mysqli_query($conn, $sql);
+                        
                         if(mysqli_num_rows($result)>0){
                             while($row = mysqli_fetch_assoc($result)){
                                 echo "
                                 <div class='col'>
                                         <!-- songcard -->
                                         <div class='card shadow-sm' style='height: 500px !important;'>
-                                   ";     
-                                echo $row['theme_image'] != NULL || !empty($row['theme_image']) ?
+                                   ";    
+                                   $path = 'themeimage_uploads/';
+                                   $completePath = $path.$row['theme_image'];
+                                echo ($row['theme_image']!=NULL || !empty($row['theme_image'])) && file_exists($completePath) ?
                                 "<img src='themeimage_uploads/" . $row['theme_image'] . "' style='max-height: 200px;' alt='Image Not found'>": "
-                                <svg class='bd-placeholder-img card-img-top' width='100%' height='225'
+                                <svg class='bd-placeholder-img card-img-top' width='100%' height='200'
                                                 xmlns='http://www.w3.org/2000/svg' role='img' aria-label='Placeholder: Thumbnail'
                                                 preserveAspectRatio='xMidYMid slice' focusable='false'>
                                                 <title>Placeholder</title>
