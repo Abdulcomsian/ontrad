@@ -155,6 +155,7 @@ if ($result->num_rows > 0) {
                                 <h4 class="label"><label for="image">Images</label></h4>
                                 <div class="img py-2">
                                     <?php
+                                    
                                     $extension = pathinfo($row["imageFull"], PATHINFO_EXTENSION);
                                     if ($extension == "pdf") {
                                     ?>
@@ -165,17 +166,22 @@ if ($result->num_rows > 0) {
                                         <a href="images/<?php echo $row["imageFull"] ?>"><img src="images/word.png" alt="Word" style="width:64px;text-align:left;" id="image_preview" class="image-set"></a>
                                     <?php
                                     } else {
+                                        if($row['imageFull']!=NULL && !empty($row['imageFull'])){
                                     ?>
-                                        <img src="images/<?php echo $row["imageFull"] ?>" alt="Song Image" style="width:100%;height:auto;" id="image_preview" class="image-set">
+                                       <img src="images/<?php echo $row["imageFull"] ?>" style="width:100%;height:auto;" id="image_preview" class="image-set">
                                     <?php
+                                    }else{
+                                    echo "<img src='images/placeholder.jpg' style='width:70%;height:auto;' id='image_preview' class='image-set'>";
+                                }
                                     }
+                                
                                     ?>
                                 </div>
                                 <div class="row py-3">
                                     <div class="col-sm-10 p-2">
                                         <div class="container mt-1">
                                             <div class="form-group upload-btn-wrapper">
-                                                <button class="btn">Choose File</button>
+                                                <button class="btn btn-primary">Choose File</button>
                                                 <input type="hidden" value="<?php echo $row["imageFull"] ?>" name="old_image" />
                                                 <input class="form-control" id="image_input" type="file" name="uploadfile" value="imgaes/<?php echo $row["imageFull"] ?>" />
                                             </div>
@@ -201,7 +207,7 @@ if ($result->num_rows > 0) {
                             </script>
                             <div class="form-group  py-2">
                                 <div class="img">
-                                    <input type="hidden" value="<?php echo $row["imageThumb"] ?>" name="thumb_image" />
+                                   
                                     <?php
                                     $extension = pathinfo($row["imageThumb"], PATHINFO_EXTENSION);
                                     if ($extension == "pdf") {
@@ -213,9 +219,13 @@ if ($result->num_rows > 0) {
                                         <a href="images/<?php echo $row["imageThumb"] ?>"><img src="images/word.png" alt="Word" style="width:64px;text-align:left;" id="thumb_preview" class="image-set"></a>
                                     <?php
                                     } else {
+                                        if($row['imageThumb']!=NULL && !empty($row['imageThumb'])){
                                     ?>
-                                        <a href="images/<?php echo $row["imageThumb"] ?>"><img src="images/<?php echo $row["imageThumb"] ?>" alt="Lights" style="width:100%;height:auto;" id="thumb_preview" class="image-set"></a>
+                                       <img src="images/<?php echo $row["imageThumb"] ?>" alt="Lights" style="width:100%;height:auto;" id="thumb_preview" class="image-set">
                                     <?php
+                                    }else{
+                                        echo "<img src='images/placeholder.jpg' style='width:70%;height:auto;' id='thumb_preview' class='image-set'>";
+                                    }
                                     }
                                     ?>
                                 </div>
@@ -224,7 +234,8 @@ if ($result->num_rows > 0) {
                                 <div class="col-sm-10 p-2">
                                     <div class="container mt-1">
                                         <div class="custom-file mb-1 upload-btn-wrapper">
-                                            <button class="btn">Choose File</button>
+                                            <button class="btn btn-primary">Choose File</button>
+                                            <input type="hidden" value="<?php echo $row["imageThumb"] ?>" name="thumb_image" />
                                             <input type="file" class="custom-file-input" name="imagethumb" id="imagethumb">
                                         </div>
                                     </div>
@@ -264,9 +275,15 @@ if ($result->num_rows > 0) {
                                         <a href="musicsheet/<?php echo $row["sheetmusic"] ?>"><img src="musicsheet/pdficon.png" alt="PDF" style="width:100%; height:auto; text-align:left;" class="image-set" id="thumb_previews"></a>
                                     <?php } else if ($extension == "doc" || $extension == "docx") { ?>
                                         <a href="musicsheet/<?php echo $row["sheetmusic"] ?>"><img src="musicsheet/word.png" alt="Word" style="width:100%; height:auto; text-align:left;" class="image-set" id="thumb_previews"></a>
-                                    <?php } else { ?>
+                                    <?php } else {
+                                        if($row['sheetmusic']!=NULL && !empty($row['sheetmusic'])){
+                                        ?>
                                         <a href="musicsheet/<?php echo $row["sheetmusic"] ?>"><img src="musicsheet/<?php echo $row["sheetmusic"] ?>" alt="Image" style="width:100%;height:auto;" class="image-set" id="thumb_previews"></a>
-                                    <?php } ?>
+                                    <?php 
+                                        }else{
+                                            echo "<img src='images/sheet1.png' style='width:70%;height:auto;' id='thumb_previews' class='image-set'>";
+                                        }
+                                } ?>
                                 </div>
                             </div>
 
@@ -274,8 +291,8 @@ if ($result->num_rows > 0) {
                             <div class="row">
                                 <div class="col-sm-10 p-2">
                                     <div class="container mt-1">
-                                        <div class="custom-file mb-1 upload-btn-wrapper mb-1 py-3">
-                                            <button class="btn">Choose File</button>
+                                        <div class="custom-file mb-1 upload-btn-wrapper">
+                                            <button class="btn btn-primary">Choose File</button>
                                             <input type="hidden" value="<?php echo $row["sheetmusic"] ?>" name="sheetmusic_image" />
                                             <input type="file" class="custom-file-input" name="sheetmusic" id="imagethumbs">
                                         </div>
@@ -312,8 +329,8 @@ if ($result->num_rows > 0) {
                                     <source src="audio/<?php echo $row["audio1"] ?>" type="audio/mpeg">
                                 </audio>
                                 <div class="container mt-1">
-                                    <div class="custom-file mb-1 upload-btn-wrapper pt-2 pb-3">
-                                        <button class="btn">Choose File</button>
+                                    <div class="custom-file mb-1 upload-btn-wrapper">
+                                        <button class="btn btn-primary">Choose File</button>
                                         <input type="hidden" value="<?php echo $row["audio1"] ?>" name="old_audio1" />
                                         <input type="file" id="audio1" class="custom-file-input" value="Audio1" name="audio1">
                                     </div>
@@ -350,8 +367,8 @@ if ($result->num_rows > 0) {
                                 </audio>
                                 <div class="col-sm-10 p-2">
                                     <div class="container mt-1">
-                                        <div class="custom-file mb-1 upload-btn-wrapper pt-2 pb-3">
-                                            <button class="btn">Choose File</button>
+                                        <div class="custom-file mb-1 upload-btn-wrapper">
+                                            <button class="btn btn-primary">Choose File</button>
                                             <input type="hidden" value="<?php echo $row["audio2"] ?>" name="old_audio2" />
                                             <input type="file" class="custom-file-input" name="audio2" id="audio2">
                                         </div>
@@ -393,8 +410,8 @@ if ($result->num_rows > 0) {
                                 </video>
                                 <br>
                                 <div class="container mt-1 ">
-                                    <div class="custom-file mb-1 upload-btn-wrapper pt-2 pb-3"">
-                                    <button class=" btn">Choose File</button>
+                                    <div class="custom-file mb-1 upload-btn-wrapper">
+                                    <button class="btn btn-primary">Choose File</button>
                                         <input type="hidden" value="<?php echo $row["video1"] ?>" name="old_video1" />
                                         <input type="file" class="custom-file-input" name="video1" id="video1">
                                         <div id="progressBar">
@@ -542,7 +559,7 @@ if ($result->num_rows > 0) {
                     <div style="text-align: center;">
                         <!--uploadfile-->
                         <div class="fileuploader">
-                            <input type="hidden" value="<?php echo $row["fileToUpload"] ?>" name="old_fileToUpload" />
+                            <!-- <input type="hidden" value="<?php echo $row["fileToUpload"] ?>" name="old_fileToUpload" /> -->
                             <!-- <h4 > Select image to upload:</h4>
                          <div class = "upload-btn-wrapper">
                                 <button class = "btn">Choose File</button>

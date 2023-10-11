@@ -18,22 +18,33 @@ require_once ("php/header.php");
 <style>
 </style>
 <body>
-<div class="container-fluid py-3 px-5">
+
+<div class="container-fluid py-3 px-8">
     <form class="form-inline" action="editsong.php" method="POST">
-        <div class="row pt-0">
-            <div class="col-sm-12 col-md-10 col-lg-9 " style="text-align: right;">
-                <input class="form-control ml-sm-2" name="search_query" type="text" placeholder="Find a song to edit">
+        <div class="row" style="flex-wrap: nowrap;">
+            <div class="col-sm-12 col-md-9 col-lg-9 text-right">
+                <input class="form-control" name="search_query" type="text" placeholder="Find a song to edit" 
+                value="<?php echo isset($_POST['search_query']) ? htmlspecialchars($_POST['search_query']) : ''; ?>">
             </div>
-            <div class="col-sm-12 col-md-2 col-lg-3 " style="text-align: center;">
-                <button class="btn btn-success" type="submit">Search</button>
+            <div class="col-sm-12 col-md-3 col-lg-3 text-center">
+                <button class="btn btn-success mb-2 mb-md-0" type="submit">Search</button>
+            </div>
+            <div class="col-sm-12 col-md-3 col-lg-3 text-center">
+                <a href="editsong.php" class="btn btn-secondary" role="button">Reset</a>
             </div>
         </div>
     </form>
 </div>
+
+
 <?php
 
 if(isset($_POST['search_query'])){
     $searchQuery = $_POST['search_query'];
+    if(empty($_POST['search_query'])){
+        echo '<script>window.location.href = "editsong.php";</script>';
+        exit;
+    }
     $sql = "SELECT Stitle, ID FROM newtable WHERE Stitle LIKE '%" . $searchQuery . "%'";
 
 

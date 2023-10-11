@@ -132,7 +132,7 @@ if(isset($_GET['message'])){
                         <div class="row">
                             <div class="col-sm-10 py-3 ">
                                 <div class="container mt-1">
-                                    <div class="form-group upload-btn-wrapper">
+                                    <div class="form-group upload-btn-wrapper" style="overflow: none;">
                                         <button class="btn btn-primary">Choose File</button>
                                         <input class="form-control" id="image_input" type="file" name="uploadfile"
                                             value="">
@@ -206,7 +206,7 @@ if(isset($_GET['message'])){
                             <div class="row">
                                 <div class="col-sm-10 p-2">
                                     <div class="container mt-1">
-                                        <div class="custom-file upload-btn-wrapper mb-1 py-3">
+                                        <div class="custom-file mb-1 upload-btn-wrapper">
                                             <button class="btn btn-primary">Choose File</button>
                                             <input type="file" class="custom-file-input" name="sheetmusic"
                                                 id="sheet-thumb">
@@ -247,7 +247,7 @@ if(isset($_GET['message'])){
                         <audio class="my-2" id="audio_player" controls>
                         </audio>
                         <div class="container mt-1">
-                            <div class="custom-file mb-1 upload-btn-wrapper pt-2 pb-3">
+                            <div class="custom-file mb-1 upload-btn-wrapper">
                                 <button class="btn btn-primary"> Choose File</button>
                                 <input type="file" id="audio1" class="custom-file-input" name="audio1">
                             </div>
@@ -283,8 +283,8 @@ if(isset($_GET['message'])){
                         </audio>
                         <div class="col-sm-10 p-2">
                             <div class="container mt-1">
-                                <div class="custom-file mb-1 upload-btn-wrapper pt-2 pb-3">
-                                    <button class=" btn"> Choose File</button>
+                                <div class="custom-file mb-1 upload-btn-wrapper">
+                                    <button class="btn btn-primary"> Choose File</button>
                                     <input type="file" class="custom-file-input" name="audio2" id="audio2">
                                 </div>
                             </div>
@@ -328,7 +328,7 @@ if(isset($_GET['message'])){
                         </div>
                         <br>
                         <div class="container mt-1">
-                            <div class="custom-file mb-1 upload-btn-wrapper py-3">
+                            <div class="custom-file mb-1 upload-btn-wrapper">
                                 <button class="btn btn-primary">Choose File</button>
                                 <input type="file" class="custom-file-input" name="video1" id="video1"
                                     onchange="checkFileSize(this)">
