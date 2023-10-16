@@ -36,8 +36,8 @@ if(isset($_GET['id'])){
                 $resultDelete = mysqli_query($conn, $sqlDelete);
                 
                 foreach ($selectedSongs as $songID) {
-                    $sql = "INSERT INTO `themes_songs` (`theme_id`, `song_id`) VALUES ('$id', '$songID')";
-                    $result = mysqli_query($conn, $sql);
+                    $sql1 = "INSERT INTO `themes_songs` (`theme_id`, `song_id`) VALUES ('$id', '$songID')";
+                    $result1 = mysqli_query($conn, $sql1);
                 }
             }
         }else{
@@ -48,5 +48,4 @@ if(isset($_GET['id'])){
     
 }
 
-header("Location: editTheme.php?id=$id");
 ?>

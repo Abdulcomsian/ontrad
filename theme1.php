@@ -59,8 +59,10 @@ if(isset($_GET['id'])){
             <div class="row" style="text-align: center; padding-left: 5%; padding-right: 5%;">
                 <!-- <div class="col-md-6"> <img src="homeimage/on_0004_fiddle.jpg" style="width: 80%;"></div> -->
                 <?php
-                echo $row['theme_image'] != NULL || !empty($row['theme_image']) ?
-                "<div class='col-md-6'> <img src='themeimage_uploads/" . $row['theme_image'] . "' style='width: 80%;'></div>": " ";
+                $path = 'themeimage_uploads/';
+                $completePath = $path.$row['theme_image'];
+                echo ($row['theme_image'] != NULL || !empty($row['theme_image'])) && file_exists($completePath) ?
+                "<div class='col-md-6'> <img src='themeimage_uploads/" . $row['theme_image'] . "' style='width: 80%;'></div>": " <div class='col-md-6'></div>";
                 ?>
                 <div class="col-md-6">
                      <div class="textarea p-2" style="text-align: left">

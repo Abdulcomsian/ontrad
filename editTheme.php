@@ -40,7 +40,10 @@ if(isset($_GET['id'])){
 require_once("php/header.php");
 ?>
 
+
+
     <div class="wrapper" style="padding: 0% 5% 0% 5%;">
+  
         <form action="updateTheme.php?id=<?php echo $id; ?>" method="post" enctype="multipart/form-data" id="uploadtheme">
             <div class="container-fluid pt-3" style="max-width: 90%;">
                 <!--title and edit modal-->
@@ -172,10 +175,12 @@ require_once("php/header.php");
                                     </table>
                                 </div>
                             </div>
-                            <div style="text-align: center;"><button id="theme-update-btn" type="submit"
-                                    class="btn btn-primary btn-sm" data-toggle="upload">
-                                    Update Theme
-                                </button>
+                            
+                            <div style="display:flex; justify-content:center; align-items:center;">
+                                <div id="loader" style="display: none;">
+                                    <img src="loader/loader.gif" alt="Loading..." />
+                                </div>
+                                <button id="theme-update-btn" type="button" class="btn btn-primary btn-sm" data-toggle="upload">Update Theme</button>
                             </div>
                         </div>
                     </div>
@@ -312,11 +317,19 @@ require_once("php/header.php");
             data: formdata,
             processData: false,
             contentType: false,
+            beforeSend: function() {
+                $('#loader').show();
+            },
             success: function(output) {
+                location.reload(true);
                 alert("Theme Updated Successfully");
             },
             error: function(xhr, status, error) {
                 console.error("AJAX Error: " + status + " - " + error);
+            },
+            complete: function() {
+                // Hide the loader when the request is complete
+                $('#loader').hide();
             }
         });
         }else{
