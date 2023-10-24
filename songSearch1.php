@@ -45,10 +45,13 @@ require_once("config/db.php");
             $ids = implode(",", $transferred_ids);
         }
     
-        $sql = "SELECT *, 
-                (SELECT COUNT(*) FROM themes_songs WHERE themes_songs.song_id = newtable.ID) AS theme_count 
-                FROM newtable 
-                WHERE `Stitle` LIKE '%" . $search . "%'";
+        // $sql = "SELECT *, 
+        //         (SELECT COUNT(*) FROM themes_songs WHERE themes_songs.song_id = newtable.ID) AS theme_count 
+        //         FROM newtable 
+        //         WHERE `Stitle` LIKE '%" . $search . "%'";
+
+        $sql = "SELECT * FROM `newtable` 
+        WHERE `Stitle` LIKE '%" . $search . "%'";
     
         if (!is_null($ids)) {
             $sql .= " AND `ID` NOT IN ($ids)";
@@ -59,7 +62,7 @@ require_once("config/db.php");
         if ($result) {
             while ($row = mysqli_fetch_assoc($result)) {
                 // Check if the song has less than 3 themes
-                if ($row['theme_count'] < 3) {
+                // if ($row['theme_count'] < 3) {
                     echo "
                     <tr>
                         <td style='padding:0;'>
@@ -70,7 +73,7 @@ require_once("config/db.php");
                         </td>
                     </tr>
                     ";
-                }
+                // }
             }
         } else {
             echo "No Song found";

@@ -1,47 +1,6 @@
 <?php
 require_once("config/db.php");
-if (isset($_FILES["uploadfile"])) {
-    $target_dir = 'themeimage_uploads/';
-    $file_name = basename($_FILES["uploadfile"]["name"]);
-    $target_file = $target_dir . $file_name; 
-    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-    move_uploaded_file($_FILES["uploadfile"]["tmp_name"], $target_file);
-}
-
-if(isset($_POST['feature']) && $_POST['feature'] === 'on'){
-    $featureStatus = "Featured";
-}else{
-    $featureStatus = "UnFeatured";
-}
-
-
-if(isset($_POST['themetitle']) && !empty($_POST['themetitle']) && !empty($_POST['themeannotation']) ){
-    $themetitle = $_POST['themetitle'];
-    $themeinfo = $_POST['themeannotation'];
-    $themeimage = $_POST['filename'];
-
-
-
-    $sql = "INSERT INTO `themes` (`theme_title`, `theme_info`, `theme_image`, `status`) VALUES ('$themetitle', '$themeinfo', '$themeimage', '$featureStatus')";
-    $result = mysqli_query($conn, $sql);
-    if($result){
-                $themeID = mysqli_insert_id($conn);
-                if(isset($_POST['transferIds'])){
-                    $selectedSongs = $_POST['transferIds'];
-                    $selectedSongs = explode("," ,$selectedSongs[0]);
-                    foreach($selectedSongs as $songID){
-                        $sql = "INSERT INTO `themes_songs` (`theme_id`, `song_id`) VALUES ('$themeID', '$songID')";
-                        $result = mysqli_query($conn, $sql);
-                    }
-                }
-                  
-                }
-            }
-
 require_once("php/header.php");
-
-
-
 ?>
 
 
@@ -125,8 +84,7 @@ require_once("php/header.php");
                         <br>
 
                         <div class="form-group upload-btn-wrapper" style="text-align: right;">
-                            <input class="form-control" id="imageInput" type="file" name="uploadfile" value=""
-                                onchange="displaySelectedImage()">
+                        <input type="file" class="form-control" id="imageInput" name="file" value="" onchange="displaySelectedImage()">
                             <button id="uploadButton" type="button" class="btn btn-primary btn-sm">Upload Image</button>
                         </div>
                         <div id="uploadStatus"></div>
@@ -209,7 +167,7 @@ require_once("php/header.php");
                                     </table>
                                 </div>
                             </div>
-                            <div style="text-align: center;"><button id="theme-upload-btn" type="submit"
+                            <div style="text-align: center;"><button id="theme-upload-btn" type="button"
                                     class="btn btn-primary btn-sm" data-toggle="upload">
                                     Upload Theme
                                 </button>
@@ -302,11 +260,11 @@ require_once("php/header.php");
             return;
         }
         
-        // formdata.append("filename", document.getElementById("imageInput").files[0].name);
         var imageInput = document.getElementById("imageInput");
 
         if (imageInput.files.length > 0) {
             formdata.append("filename", imageInput.files[0].name);
+            formdata.append("file", imageInput.files[0]);
         } else {
             e.preventDefault();
             alert("Please upload Image")
@@ -322,30 +280,17 @@ require_once("php/header.php");
         formdata.append("transferIds[]", selectedIDs);
         let featureStatus = $('#btncheck1').prop('checked') ? 'on' : 'off';
         formdata.append("feature", featureStatus);
-if(selectedIDs.length>0){
+        if(selectedIDs.length>0){
                 $.ajax({
-                url: 'thememanager.php',
+                url: 'savaTheme.php',
                 type: 'POST',
                 data: formdata,
+                enctype: 'multipart/form-data',
                 processData: false,
                 contentType: false,
                 success: function(output) {
-                    if (output) {
-                        // var alertElement = $(
-                        //     '<div class="alert alert-success alert-dismissible fade show" role="alert">' +
-                        //     '<strong>Success!</strong> Theme Added Successfully.' +
-                        //     '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
-                        //     '</div>'
-                        // );
-                        
-                        // $('#main-form-alert').append(alertElement); 
-                        // setTimeout(function() {
-                        //     window.location.reload();
-                        // }, 2000);
                         alert("Theme Added Successfully");
-                    } else {
-                        alert("Theme is not added successfully, Please Try Again")
-                    }
+                        location.reload(true);
                 },
             });
         }else{

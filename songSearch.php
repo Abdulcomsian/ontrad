@@ -17,9 +17,12 @@ require_once("config/db.php");
             }
         }
 
-        $sql = "SELECT *, 
-        (SELECT COUNT(*) FROM themes_songs WHERE themes_songs.song_id = newtable.ID) AS theme_count 
-        FROM newtable 
+        // $sql = "SELECT *, 
+        // (SELECT COUNT(*) FROM themes_songs WHERE themes_songs.song_id = newtable.ID) AS theme_count 
+        // FROM newtable 
+        // WHERE `Stitle` LIKE '%" . $search . "%'";
+
+        $sql = "SELECT * FROM newtable 
         WHERE `Stitle` LIKE '%" . $search . "%'";
 
         if (!is_null($ids)&&!empty($ids)) {
@@ -29,7 +32,7 @@ require_once("config/db.php");
             $result = mysqli_query($conn, $sql);
             if ($result) {
                 while ($row = mysqli_fetch_assoc($result)) {
-                    if ($row['theme_count'] < 3) {
+                    // if ($row['theme_count'] < 3) {
                     echo "
                     <tr>
                         <td style='padding:0;'>
@@ -40,7 +43,7 @@ require_once("config/db.php");
                         </td>
                     </tr>
                 ";
-                }
+                // }
             }
             } else {
                 echo "No Result found";

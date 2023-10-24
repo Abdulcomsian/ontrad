@@ -1,16 +1,13 @@
 <?php
 require_once("config/db.php");
-
-
-
 if(isset($_GET['id'])){
     $id = $_GET['id'];
-    if (isset($_FILES["uploadfile"])) {
+    if (isset($_FILES["file"])) {
         $target_dir = 'themeimage_uploads/';
-        $file_name = basename($_FILES["uploadfile"]["name"]);
+        $file_name = basename($_FILES["file"]["name"]);
         $target_file = $target_dir . $file_name; 
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-        move_uploaded_file($_FILES["uploadfile"]["tmp_name"], $target_file);
+        move_uploaded_file($_FILES["file"]["tmp_name"], $target_file);
     }
     
     

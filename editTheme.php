@@ -73,7 +73,7 @@ require_once("php/header.php");
                         <br>
 
                         <div class="form-group upload-btn-wrapper" style="text-align: right;">
-                            <input class="form-control" id="imageInput" type="file" name="uploadfile" value=""
+                            <input class="form-control" id="imageInput" type="file" name="file" value=""
                                 onchange="displaySelectedImage()">
                             <button id="uploadButton" type="button" class="btn btn-primary btn-sm">Upload New
                                 Image</button>
@@ -297,6 +297,7 @@ require_once("php/header.php");
         var imageInput = document.getElementById("imageInput");
         if (imageInput.files.length > 0) {
             formdata.append("filename", imageInput.files[0].name);
+            formdata.append("file", imageInput.files[0]);
         } else {
             formdata.append("filename", "<?php echo $themeImage;?>");
         }
@@ -315,14 +316,15 @@ require_once("php/header.php");
             url: 'updateTheme.php?id=<?php echo $id; ?>',
             type: 'POST',
             data: formdata,
+            enctype: 'multipart/form-data',
             processData: false,
             contentType: false,
             beforeSend: function() {
                 $('#loader').show();
             },
             success: function(output) {
-                location.reload(true);
                 alert("Theme Updated Successfully");
+                location.reload(true);
             },
             error: function(xhr, status, error) {
                 console.error("AJAX Error: " + status + " - " + error);
