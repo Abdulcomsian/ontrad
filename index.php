@@ -26,6 +26,17 @@ require_once("php/header2.php");
         transform: scale(1.75);
         margin-bottom: 5%;
     }
+    .listStyle{
+        background-color: white;
+        color: blue;
+        border-top: 1px solid #dee2e6;
+        border-bottom: 1px solid #dee2e6;
+        border-left: none;
+        border-right: none;
+        padding: 0.4rem 0.75rem;
+        /* display: flex;
+        align-items: flex-end; */
+    }
     </style>
 
 <body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
@@ -320,8 +331,32 @@ require_once("php/header2.php");
                         if(mysqli_num_rows($result1)>9){
                         $totalRecords = mysqli_num_rows($result1);
                         $totalPages = ceil($totalRecords / $limit);
+                        $pageLimit = 4;
                         echo "<ul class='pagination mt-3'>";
-                        for($i=1; $i<=$totalPages; $i++){
+                        if($page>1){
+                            if(!empty($types)){
+                                if($page>=$pageLimit){
+                                    echo "<li><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&type[]=".$type."&page=1&status=songs'>First</a></li>";
+                                }
+                                echo "<li><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&type[]=".$type."&page=".($page-1)."&status=songs'><i class='fa-solid fa-chevron-left'></i></a></li>";
+                                if($page>=$pageLimit){
+                                    echo "<li class='listStyle'>...</li>";
+                                }
+                            }else{
+                                if($page>=$pageLimit){
+                                    echo "<li><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&page=1&status=songs'>First</a></li>";
+                                }
+                                echo "<li><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&page=".($page-1)."&status=songs'><i class='fa-solid fa-chevron-left'></i></a></li>";
+                                if($page>=$pageLimit){
+                                    echo "<li class='listStyle'>...</li>";
+                                }
+                            }
+                        }
+
+                        $startPage = max(1, $page - 2);
+                        $endPage = min($totalPages, $startPage + $pageLimit - 1);
+
+                        for($i=$startPage; $i<=$endPage; $i++){
                             if($i==$page){
                             $active = "active";
                             }else{
@@ -334,6 +369,26 @@ require_once("php/header2.php");
                                 echo "<li class='".$active."'><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&page=".$i."&status=songs'>".$i."</a></li>";
                             }
                         }
+
+                        if(($page+1)<$totalPages){
+                            if(!empty($types)){
+                                if($totalPages>4){
+                                    echo "<li class='listStyle'>...</li>";
+                                }
+                                echo "<li><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&type[]=".$type."&page=".($page+1)."&status=songs'><i class='fa-solid fa-chevron-right'></i></a></li>";
+                                if($totalPages>4){
+                                    echo "<li><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&type[]=".$type."&page=".$totalPages."&status=songs'>Last</a></li>";
+                                }
+                            }else{
+                                if($totalPages>4){
+                                    echo "<li class='listStyle'>...</li>";
+                                }
+                                echo "<li><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&page=".($page+1)."&status=songs'><i class='fa-solid fa-chevron-right'></i></a></li>";
+                                if($totalPages>4){
+                                    echo "<li><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&page=".$totalPages."&status=songs'>Last</a></li>";
+                                }
+                            }
+                        }
                         echo "</ul>";
                         }
                     }else{
@@ -343,8 +398,21 @@ require_once("php/header2.php");
                         if(mysqli_num_rows($result1)>0){
                         $totalRecords = mysqli_num_rows($result1);
                         $totalPages = ceil($totalRecords / $limit);
+                        $pageLimit = 4;
                         echo "<ul class='pagination mt-3'>";
-                        for($i=1; $i<=$totalPages; $i++){
+                        if($page>1){
+                            if($page>=$pageLimit){
+                            echo "<li><a class='page-link' href='index.php?page=1&status=songs'>First</a></li>";
+                            }
+                            echo "<li><a class='page-link' href='index.php?page=".($page-1)."&status=songs'><i class='fa-solid fa-chevron-left'></i></a></li>";
+                            if($page>=$pageLimit){
+                                echo "<li class='listStyle'>...</li>";
+                            }
+                        }
+
+                        $startPage = max(1, $page - 2);
+                        $endPage = min($totalPages, $startPage + $pageLimit - 1);
+                        for($i=$startPage; $i<=$endPage; $i++){
                             if($i==$page){
                             $active = "active";
                             }else{
@@ -352,7 +420,15 @@ require_once("php/header2.php");
                             }
 
                         echo  "<li class='".$active."'><a class='page-link' href='index.php?page=".$i."&status=songs'>".$i."</a></li>";
-                            
+                        }
+                        if(($page+1)<$totalPages){
+                            if($totalPages>4){
+                                echo "<li class='listStyle'>...</li>";
+                            }
+                            echo "<li><a class='page-link' href='index.php?page=".($page+1)."&status=songs'><i class='fa-solid fa-chevron-right'></i></a></li>";
+                            if($totalPages>4){
+                                echo "<li><a class='page-link' href='index.php?page=".$totalPages."&status=songs'>Last</a></li>";
+                            }
                         }
                         echo "</ul>";
                         }
@@ -436,14 +512,28 @@ require_once("php/header2.php");
                     ?>   
                 </div>
                 <?php
+                // Pagination on themes Section
                     $sql1 = "SELECT * FROM `themes` WHERE `status` = 'Featured'";
                     $result1 = mysqli_query($conn, $sql1);
 
                     if(mysqli_num_rows($result1)>0){
                     $totalRecords = mysqli_num_rows($result1);
                     $totalPages = ceil($totalRecords / $limit);
+                    $pageLimit = 4;
                     echo "<ul class='pagination mt-3'>";
-                    for($i=1; $i<=$totalPages; $i++){
+                    if($page>1){
+                        if($page>=$pageLimit){
+                        echo  "<li><a class='page-link' href='index.php?themePage=1&status=themes'>First</a></li>";
+                        }
+                        echo  "<li><a class='page-link' href='index.php?themePage=".($page-1)."&status=themes'><i class='fa-solid fa-chevron-left'></i></a></li>";
+                        if($page>=$pageLimit){
+                            echo "<li class='listStyle'>...</li>";
+                        }
+                    }
+
+                    $startPage = max(1, $page - 2);
+                    $endPage = min($totalPages, $startPage + $pageLimit - 1);
+                    for($i = $startPage; $i <= $endPage; $i++){
                         if($i==$page){
                         $active = "active";
                         }else{
@@ -452,6 +542,15 @@ require_once("php/header2.php");
 
                     echo  "<li class='".$active."'><a class='page-link' href='index.php?themePage=".$i."&status=themes'>".$i."</a></li>";
                         
+                    }
+                    if(($page+1)<$totalPages){
+                        if($totalPages>4){
+                            echo "<li class='listStyle'>...</li>";
+                        }
+                        echo  "<li><a class='page-link' href='index.php?themePage=".($page+1)."&status=themes'><i class='fa-solid fa-chevron-right'></i></a></li>";
+                        if($totalPages>4){
+                            echo  "<li><a class='page-link' href='index.php?themePage=".$totalPages."&status=themes'>Last</a></li>";
+                        }
                     }
                     echo "</ul>";
                     }
