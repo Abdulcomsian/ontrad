@@ -26,7 +26,8 @@ require_once("php/header2.php");
         transform: scale(1.75);
         margin-bottom: 5%;
     }
-    .listStyle{
+
+    .listStyle {
         background-color: white;
         color: blue;
         border-top: 1px solid #dee2e6;
@@ -36,6 +37,12 @@ require_once("php/header2.php");
         padding: 0.4rem 0.75rem;
         /* display: flex;
         align-items: flex-end; */
+    }
+
+    .container {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
     }
     </style>
 
@@ -150,302 +157,151 @@ require_once("php/header2.php");
         </div>
 
 
+        <!-- Songs Section Start here  -->
         <div class="album">
             <div class="container">
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+
+                <!-- Scrolling Songs  -->
+                <a class="prev" onclick="scrollHorizontally(-1)" style="cursor: pointer;
+                    text-decoration: none;
+                    margin-right: 20px;
+                    ">❮</a>
+                <div class="scrollmenu scrollMenuSongs">
+
                     <?php
-                            $limit = 9;
-                            if(isset($_GET['page'])){
-                              $page = $_GET['page'];
-                            }else{
-                              $page = 1;
-                            }
-                            $offset = ($page-1)*$limit;
+                 if (isset($_GET['search_query'])) {
+                    $search_query = $_GET['search_query'];
+                    $circa = $_GET['circa']; 
+                    $region = $_GET['region']; 
+                    $types = isset($_GET['type']) ? $_GET['type'] : array();
+                      // this condition will return to index.php if the below condition is true
+                      if (empty($_GET['search_query']) && empty($_GET['circa']) && empty($_GET['region']) && empty($_GET['type'])) {
+                              echo '<script>window.location.href = "index.php";</script>';
+                              exit;
+                      }
 
-                            if (isset($_GET['search_query'])) {
-                              $search_query = $_GET['search_query'];
-                              $circa = $_GET['circa']; 
-                              $region = $_GET['region']; 
-                              $types = isset($_GET['type']) ? $_GET['type'] : array();
-                                // this condition will return to index.php if the below condition is true
-                                if (empty($_GET['search_query']) && empty($_GET['circa']) && empty($_GET['region']) && empty($_GET['type'])) {
-                                        echo '<script>window.location.href = "index.php";</script>';
-                                        exit;
-                                }
+                    $sql = "SELECT * FROM `newtable` WHERE `Stitle` LIKE '%" . $search_query . "%'";
 
-                              $sql = "SELECT * FROM `newtable` WHERE `Stitle` LIKE '%" . $search_query . "%'";
+                    if (!empty($circa)) {
+                        $sql .= " AND `circa` = '" . $circa . "'";
+                    }
 
-                              if (!empty($circa)) {
-                                  $sql .= " AND `circa` = '" . $circa . "'";
-                              }
+                    if (!empty($region)) {
+                        $sql .= " AND `region` = '" . $region . "'";
+                    }
 
-                              if (!empty($region)) {
-                                  $sql .= " AND `region` = '" . $region . "'";
-                              }
+                    if (!empty($types)) {
+                      $typeConditions = array();
+                      foreach ($types as $type) {
+                        $typeConditions[] = "(`theme1` = '$type' OR `theme2` = '$type' OR `theme3` = '$type')";
+                    }
+                    $sql .= " AND (" . implode(" OR ", $typeConditions) . ")";
+                    }
+                    
+                    $result = mysqli_query($conn, $sql);
 
-                              if (!empty($types)) {
-                                $typeConditions = array();
-                                foreach ($types as $type) {
-                                  $typeConditions[] = "(`theme1` = '$type' OR `theme2` = '$type' OR `theme3` = '$type')";
-                              }
-                              $sql .= " AND (" . implode(" OR ", $typeConditions) . ")";
-                              }
+                    if(mysqli_num_rows($result)>0){
+                        while($row = mysqli_fetch_assoc($result)){
+                ?>
+                    <a href="song1.php?id=<?php echo base64_encode($row['ID']); ?>">
+                        <!--themelink-->
+                        <p><?php echo substr($row['Stitle'], 0, 15); ?>..</p>
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front">
+                                    <!--thumbnail-->
 
-                              $sql .= " LIMIT {$offset}, {$limit}";
-                              
-                              $result = mysqli_query($conn, $sql);
-
-
-                              if(mysqli_num_rows($result)>0){
-                                while ($row = mysqli_fetch_assoc($result)) {
-                                  echo "
-                                      <div class='col'>
-                                          <div class='card shadow-sm' style='height: 620px !important;'>
-                                              <div class='d-flex flex-column justify-content-between' style='height: 100%;'>";
-                                $path = 'images/';
-                                $completePath = $path.$row['imageThumb'];
-                                  echo ($row['imageThumb'] != NULL || !empty($row['imageThumb'])) && file_exists($completePath)
-                                      ? "<img src='images/" . $row['imageThumb'] . "' style='max-height: 200px;' alt='Image Not found'>"
-                                      : "<svg class='bd-placeholder-img card-img-top' width='100%' height='200px'
-                                          xmlns='http://www.w3.org/2000/svg' role='img' aria-label='Placeholder: Thumbnail'
-                                          preserveAspectRatio='xMidYMid slice' focusable='false'>
-                                          <title>Placeholder</title>
-                                          <rect width='100%' height='100%' fill='#55595c' /><text x='50%' y='50%'
-                                              fill='#eceeef' dy='.3em'>ONTRAD IMAGE</text>
-                                      </svg>";
-                              
-                                      echo "
-                                      <div class='card-body'>
-                                          <h4>" . $row['Stitle'] . "</h4>
-                                          <small class='text-body-secondary'><strong>" . $row['circa'] . "</strong></small><small class='text-body-secondary'> " . $row['region'] . "</small>
-                                          <p class='card-text'>" . substr($row['shortanno'], 0, 50) . "...</p>
-                                      </div>
-                                      <div class='card-footer' style='background-color: white;'>
-                                      <div class='btn-group'>
-                                          <a href='song1.php?id=".base64_encode($row['ID'])."' class='btn btn-sm btn-outline-secondary'>View Page</a>
-                                        ";
-                                            if($row['audio1']!=NULL && !empty($row['audio1'])){                                        
-                                                echo "<button type='button' data-song-name='".$row['audio1']."' id='playSong' onclick='playAudio(event)' class='btn btn-sm btn-outline-secondary'>Play Song</button>";
-                                            }elseif($row['audio2']!=NULL && !empty($row['audio2'])){
-                                                echo "<button type='button' data-song-name='".$row['audio2']."' id='playSong' onclick='playAudio(event)' class='btn btn-sm btn-outline-secondary'>Play Song</button>";
-                                            }else{
-                                                echo " ";
-                                            }
-                              echo "
-                                      </div>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          ";
-                              }         
-                            }else{
-                                echo "No songs Found";
-                            }
-                            }else {
-                              $sql = "SELECT * FROM `newtable` ORDER BY `Stitle` ASC LIMIT {$offset}, {$limit}";
-                              $result = mysqli_query($conn, $sql);
-
-                            if(mysqli_num_rows($result)>0){
-
-                            
-                              while ($row = mysqli_fetch_assoc($result)) {
-                                echo "
-                                    <div class='col'>
-                                        <div class='card shadow-sm' style='height: 600px !important;'>
-                                            <div class='d-flex flex-column justify-content-between' style='height: 100%;'>";
+                                    <?php
                                  $path = 'images/';
                                  $completePath = $path.$row['imageThumb'];
-                                echo ($row['imageThumb'] != NULL || !empty($row['imageThumb'])) && file_exists($completePath)
-                                    ? "<img src='images/" . $row['imageThumb'] . "' style='max-height: 200px;' alt='Image Not found'>"
-                                    : "<svg class='bd-placeholder-img card-img-top' width='100%' height='200px'
-                                        xmlns='http://www.w3.org/2000/svg' role='img' aria-label='Placeholder: Thumbnail'
-                                        preserveAspectRatio='xMidYMid slice' focusable='false'>
+                                 if(($row['imageThumb'] != NULL || !empty($row['imageThumb'])) && file_exists($completePath)){ ?>
+                                    <img src="images/<?php echo $row['imageThumb']; ?>" alt="Avatar"
+                                        style="height: 130px; width: 100%;">
+                                    <?php }else{?>
+                                    <svg class="bd-placeholder-img card-img-top" width="100%" height="200px"
+                                        xmlns="http://www.w3.org/2000/svg" role="img"
+                                        aria-label="Placeholder: Thumbnail" preserveAspectRatio='xMidYMid slice'
+                                        focusable='false'>
                                         <title>Placeholder</title>
-                                        <rect width='100%' height='100%' fill='#55595c' /><text x='50%' y='50%'
-                                            fill='#eceeef' dy='.3em'>ONTRAD IMAGE</text>
-                                    </svg>";
-                            
-                                echo "
-                                            <div class='card-body'>
-                                                <h4>" . $row['Stitle'] . "</h4>
-                                                <small class='text-body-secondary'><strong>" . $row['circa'] . "</strong></small><small class='text-body-secondary'> " . $row['region'] . "</small>
-                                                <p class='card-text'>" . substr($row['shortanno'], 0, 50) . "...</p>
-                                            </div>
-                                            <div class='card-footer' style='background-color: white;'>
-                                            <div class='btn-group'>
-                                                <a href='song1.php?id=".base64_encode($row['ID'])."' class='btn btn-sm btn-outline-secondary'>View Page</a>
-                                    ";
-                                        if($row['audio1']!=NULL && !empty($row['audio1'])){                                        
-                                            echo "<button type='button' data-song-name='".$row['audio1']."' id='playSong' onclick='playAudio(event)' class='btn btn-sm btn-outline-secondary'>Play Song</button>";
-                                        }elseif($row['audio2']!=NULL && !empty($row['audio2'])){
-                                            echo "<button type='button' data-song-name='".$row['audio2']."' id='playSong' onclick='playAudio(event)' class='btn btn-sm btn-outline-secondary'>Play Song</button>";
-                                        }else{
-                                            echo " ";
-                                        }
+                                        <rect width="100%" height="130px" fill="#55595c" /><text x="50%" y="50%"
+                                            fill="#eceeef" dy=".3em">ONTRAD IMAGE</text>
+                                    </svg>
 
-                                    echo "
-                                            </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <?php }
+                             ?>
                                 </div>
-                                ";
-                            }
-                        }else{
-                            echo "No Songs Found";
-                        }
-
-                        }
-                    ?>
-                </div>
-                <?php
-                    // pagination while searching (Filtering through Songs)
-                    if(isset($_GET['search_query'])){
-                        $search_query = $_GET['search_query'];
-                        $circa = $_GET['circa']; 
-                        $region = $_GET['region']; 
-                        $types = isset($_GET['type']) ? $_GET['type'] : array();
-                        $sql1 = "SELECT * FROM `newtable` WHERE `Stitle` LIKE '%" . $search_query . "%'";                            ;
-
-                        if (!empty($circa)) {
-                            $sql1 .= " AND `circa` = '" . $circa . "'";
-                        }
-
-                        if (!empty($region)) {
-                            $sql1 .= " AND `region` = '" . $region . "'";
-                        }
-
-                        if (!empty($types)) {
-                        $typeConditions = array();
-                        foreach ($types as $type) {
-                            $typeConditions[] = "(`theme1` = '$type' OR `theme2` = '$type' OR `theme3` = '$type')";
-                        }
-                        $sql1 .= " AND (" . implode(" OR ", $typeConditions) . ")";
-                        }
-
-                        $sql1 .= " ORDER BY `Stitle` ASC";
-
-                        $result1 = mysqli_query($conn, $sql1);
-                        
-                        if(mysqli_num_rows($result1)>9){
-                        $totalRecords = mysqli_num_rows($result1);
-                        $totalPages = ceil($totalRecords / $limit);
-                        $pageLimit = 4;
-                        echo "<ul class='pagination mt-3'>";
-                        if($page>1){
-                            if(!empty($types)){
-                                if($page>=$pageLimit){
-                                    echo "<li><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&type[]=".$type."&page=1&status=songs'>First</a></li>";
-                                }
-                                echo "<li><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&type[]=".$type."&page=".($page-1)."&status=songs'><i class='fa-solid fa-chevron-left'></i></a></li>";
-                                if($page>=$pageLimit){
-                                    echo "<li class='listStyle'>...</li>";
-                                }
-                            }else{
-                                if($page>=$pageLimit){
-                                    echo "<li><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&page=1&status=songs'>First</a></li>";
-                                }
-                                echo "<li><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&page=".($page-1)."&status=songs'><i class='fa-solid fa-chevron-left'></i></a></li>";
-                                if($page>=$pageLimit){
-                                    echo "<li class='listStyle'>...</li>";
-                                }
-                            }
-                        }
-
-                        $startPage = max(1, $page - 2);
-                        $endPage = min($totalPages, $startPage + $pageLimit - 1);
-
-                        for($i=$startPage; $i<=$endPage; $i++){
-                            if($i==$page){
-                            $active = "active";
-                            }else{
-                            $active = " ";
-                            }
-                            
-                            if(!empty($types)){
-                                echo "<li class='".$active."'><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&type[]=".$type."&page=".$i."&status=songs'>".$i."</a></li>";
-                            }else{
-                                echo "<li class='".$active."'><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&page=".$i."&status=songs'>".$i."</a></li>";
-                            }
-                        }
-
-                        if(($page+1)<$totalPages){
-                            if(!empty($types)){
-                                if($totalPages>4){
-                                    echo "<li class='listStyle'>...</li>";
-                                }
-                                echo "<li><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&type[]=".$type."&page=".($page+1)."&status=songs'><i class='fa-solid fa-chevron-right'></i></a></li>";
-                                if($totalPages>4){
-                                    echo "<li><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&type[]=".$type."&page=".$totalPages."&status=songs'>Last</a></li>";
-                                }
-                            }else{
-                                if($totalPages>4){
-                                    echo "<li class='listStyle'>...</li>";
-                                }
-                                echo "<li><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&page=".($page+1)."&status=songs'><i class='fa-solid fa-chevron-right'></i></a></li>";
-                                if($totalPages>4){
-                                    echo "<li><a class='page-link' href='index.php?search_query=".$search_query."&circa=".$circa."&region=".$region."&page=".$totalPages."&status=songs'>Last</a></li>";
-                                }
-                            }
-                        }
-                        echo "</ul>";
+                                <div class="flip-card-back">
+                                    <!--Byline-->
+                                    <p style="text-wrap: wrap; word-wrap: break-word; padding: 3px;">
+                                        <?php echo substr($row['shortanno'], 0, 20 )?>...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <?php
                         }
                     }else{
-                        $sql1 = "SELECT * FROM `newtable`";
-                        $result1 = mysqli_query($conn, $sql1);
-                        
-                        if(mysqli_num_rows($result1)>0){
-                        $totalRecords = mysqli_num_rows($result1);
-                        $totalPages = ceil($totalRecords / $limit);
-                        $pageLimit = 4;
-                        echo "<ul class='pagination mt-3'>";
-                        if($page>1){
-                            if($page>=$pageLimit){
-                            echo "<li><a class='page-link' href='index.php?page=1&status=songs'>First</a></li>";
-                            }
-                            echo "<li><a class='page-link' href='index.php?page=".($page-1)."&status=songs'><i class='fa-solid fa-chevron-left'></i></a></li>";
-                            if($page>=$pageLimit){
-                                echo "<li class='listStyle'>...</li>";
-                            }
-                        }
-
-                        $startPage = max(1, $page - 2);
-                        $endPage = min($totalPages, $startPage + $pageLimit - 1);
-                        for($i=$startPage; $i<=$endPage; $i++){
-                            if($i==$page){
-                            $active = "active";
-                            }else{
-                            $active = " ";
-                            }
-
-                        echo  "<li class='".$active."'><a class='page-link' href='index.php?page=".$i."&status=songs'>".$i."</a></li>";
-                        }
-                        if(($page+1)<$totalPages){
-                            if($totalPages>4){
-                                echo "<li class='listStyle'>...</li>";
-                            }
-                            echo "<li><a class='page-link' href='index.php?page=".($page+1)."&status=songs'><i class='fa-solid fa-chevron-right'></i></a></li>";
-                            if($totalPages>4){
-                                echo "<li><a class='page-link' href='index.php?page=".$totalPages."&status=songs'>Last</a></li>";
-                            }
-                        }
-                        echo "</ul>";
-                        }
+                        echo "<p style='text-align:center; color: white; margin-top: 20px;'>No Song Found related to '" . $search_query . "'</p>";
                     }
+                }else{
+                $sql = "SELECT * FROM `newtable` ORDER BY `Stitle`";
+                $result = mysqli_query($conn, $sql);
+                if(mysqli_num_rows($result)>0){                            
+                    while ($row = mysqli_fetch_assoc($result)) {
                 ?>
+                    <a href="song1.php?id=<?php echo base64_encode($row['ID']); ?>">
+                        <!--themelink-->
+                        <p><?php echo substr($row['Stitle'], 0, 15); ?>..</p>
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front">
+                                    <!--thumbnail-->
+
+                                    <?php
+                                 $path = 'images/';
+                                 $completePath = $path.$row['imageThumb'];
+                                 if(($row['imageThumb'] != NULL || !empty($row['imageThumb'])) && file_exists($completePath)){ ?>
+                                    <img src="images/<?php echo $row['imageThumb']; ?>" alt="Avatar"
+                                        style="height: 130px; width: 100%;">
+                                    <?php }else{?>
+                                    <svg class="bd-placeholder-img card-img-top" width="100%" height="200px"
+                                        xmlns="http://www.w3.org/2000/svg" role="img"
+                                        aria-label="Placeholder: Thumbnail" preserveAspectRatio='xMidYMid slice'
+                                        focusable='false'>
+                                        <title>Placeholder</title>
+                                        <rect width="100%" height="130px" fill="#55595c" /><text x="50%" y="50%"
+                                            fill="#eceeef" dy=".3em">ONTRAD IMAGE</text>
+                                    </svg>
+
+                                    <?php }
+                             ?>
+                                </div>
+                                <div class="flip-card-back">
+                                    <!--Byline-->
+                                    <p style="text-wrap: wrap; word-wrap: break-word; padding: 3px;">
+                                        <?php echo substr($row['shortanno'], 0, 20 )?>...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <?php
+                    }
+                }
+            }
+                ?>
+                </div>
+                <a class="next" onclick="scrollHorizontally(1)" style="cursor: pointer;
+                    text-decoration: none;
+                    margin-left: 20px;
+                    ">❯</a>
             </div>
         </div>
 
-
-        <!-- <li class="page-item"><a class="page-link" href="#">2</a></li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li> -->
-
-
-        <!-- end of nav -->
         <br><br>
     </div>
-    <!--end of scrolling songlist -->
+    <!-- Song Section End Here  -->
+
     <div class="ontradgreenlite ontradred p-4 text-center">
         <h4>FEATURED THEMES</h4>
 
@@ -453,8 +309,11 @@ require_once("php/header2.php");
             <button type="button" class="button1" onclick="document.location='/themelist.php'">All Themes</button>
         </div>
     </div>
+
+
     <!--SCROLLING FIELD OF themes A t0 Z-->
-    <div class="ontragreen pb-5 ">
+
+    <div class="ontragreen">
         <div style="text-align: center;">
             <h4>
                 <!-- reverse order of songs A to Z --> &uarr; &nbsp; &darr;
@@ -463,293 +322,328 @@ require_once("php/header2.php");
         <!-- theme section starts here  -->
         <div class="album">
             <div class="container">
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                <a class="prev" onclick="scrollHorizontallyThemes(-2)" style="cursor: pointer;
+                    text-decoration: none;
+                    margin-right: 20px;
+                    ">❮</a>
+                <div class="scrollmenu scrollMenuThemes">
 
                     <?php
-                    $limit = 9;
-                    if(isset($_GET['themePage'])){
-                      $page = $_GET['themePage'];
-                    }else{
-                      $page = 1;
-                    }
-                    $offset = ($page-1)*$limit;
-                    
+                 if (isset($_GET['search_query'])) {
+                    $search_query = $_GET['search_query'];
+                    $sql = "SELECT * FROM `themes` WHERE `theme_title` LIKE '%" . $search_query . "%' AND `status` = 'Featured'";                    
+                    $result = mysqli_query($conn, $sql);
 
-                        $sql = "SELECT * FROM `themes` WHERE `status` = 'Featured' LIMIT {$offset}, {$limit}";
-                        $result = mysqli_query($conn, $sql);
-                        
-                        if(mysqli_num_rows($result)>0){
-                            while($row = mysqli_fetch_assoc($result)){
-                                echo "
-                                <div class='col'>
-                                        <!-- songcard -->
-                                        <div class='card shadow-sm' style='height: 500px !important;'>
-                                   ";    
-                                   $path = 'themeimage_uploads/';
-                                   $completePath = $path.$row['theme_image'];
-                                echo ($row['theme_image']!=NULL || !empty($row['theme_image'])) && file_exists($completePath) ?
-                                "<img src='themeimage_uploads/" . $row['theme_image'] . "' style='max-height: 200px;' alt='Image Not found'>": "
-                                <svg class='bd-placeholder-img card-img-top' width='100%' height='200'
-                                                xmlns='http://www.w3.org/2000/svg' role='img' aria-label='Placeholder: Thumbnail'
-                                                preserveAspectRatio='xMidYMid slice' focusable='false'>
-                                                <title>Placeholder</title>
-                                                <rect width='100%' height='100%' fill='#55595c' /><text x='50%' y='50%' fill='#eceeef'
-                                                    dy='.3em'>ONTRAD IMAGE</text>
-                                            </svg>";
-                                echo "            
-                                            <div class='card-body'>
-                                                <h4> ".$row['theme_title']."</h4>
-                                                <p class='card-text'>".substr($row['theme_info'], 0, 50)."...</p>
-                                            </div>
-                                            <div class='card-footer' style='background-color: white;'>
-                                                <a href='theme1.php?id=" . base64_encode($row['id']) . "' class='btn btn-sm btn-outline-secondary'>View Page</a>
-                                            </div>
-                                        </div>
-                                    </div><!-- End of songcard -->
-                                ";
-                            }
-                        }
-                    ?>   
-                </div>
-                <?php
-                // Pagination on themes Section
-                    $sql1 = "SELECT * FROM `themes` WHERE `status` = 'Featured'";
-                    $result1 = mysqli_query($conn, $sql1);
-
-                    if(mysqli_num_rows($result1)>0){
-                    $totalRecords = mysqli_num_rows($result1);
-                    $totalPages = ceil($totalRecords / $limit);
-                    $pageLimit = 4;
-                    echo "<ul class='pagination mt-3'>";
-                    if($page>1){
-                        if($page>=$pageLimit){
-                        echo  "<li><a class='page-link' href='index.php?themePage=1&status=themes'>First</a></li>";
-                        }
-                        echo  "<li><a class='page-link' href='index.php?themePage=".($page-1)."&status=themes'><i class='fa-solid fa-chevron-left'></i></a></li>";
-                        if($page>=$pageLimit){
-                            echo "<li class='listStyle'>...</li>";
-                        }
-                    }
-
-                    $startPage = max(1, $page - 2);
-                    $endPage = min($totalPages, $startPage + $pageLimit - 1);
-                    for($i = $startPage; $i <= $endPage; $i++){
-                        if($i==$page){
-                        $active = "active";
-                        }else{
-                        $active = " ";
-                        }
-
-                    echo  "<li class='".$active."'><a class='page-link' href='index.php?themePage=".$i."&status=themes'>".$i."</a></li>";
-                        
-                    }
-                    if(($page+1)<$totalPages){
-                        if($totalPages>4){
-                            echo "<li class='listStyle'>...</li>";
-                        }
-                        echo  "<li><a class='page-link' href='index.php?themePage=".($page+1)."&status=themes'><i class='fa-solid fa-chevron-right'></i></a></li>";
-                        if($totalPages>4){
-                            echo  "<li><a class='page-link' href='index.php?themePage=".$totalPages."&status=themes'>Last</a></li>";
-                        }
-                    }
-                    echo "</ul>";
-                    }
-
+                    if(mysqli_num_rows($result)>0){
+                        while($row = mysqli_fetch_assoc($result)){
                 ?>
-            </div>
-        </div>
-    </div>
-    <!-- Container (Contact Section) -->
-    <div class="container-fluid ontradgreenlite ontradred py-3" style="width: 100%;">
-        <h5 class="text-center">CONTACT US</h5>
-        <div class="row">
-            <div class="col" style="width: 100%; text-align: center;">
-                <h5> mail@ontariotraditionalmusic.ca</h5>
-            </div>
-        </div>
-        <br>
-        <!-- Button to Open the Modal -->
-        <div style="text-align: center;">
-            <button type="button" class="button1" data-toggle="modal" data-target="#dropline">
-                Drop us a line
-            </button>
-        </div>
-        <!-- The Modal -->
-        <div class="modal" id="dropline">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="alert alert-light m-3" style="padding: 3% 10% 3% 10%">
-                        <p style="text-align: center;">
-                            <img src="images/ontradlogo160px.jpg" style="text-align: center;">
-                            <hr>
-                            We welcome your comments and suggestions
-                        </p>
-                        <div class="row">
-                            <div class="col-sm-6 form-group">
-                                <input class="form-control" style="width: 100%;" id="name" name="name"
-                                    placeholder="Name" type="text" required>
-                            </div>
-                            <div class="col-sm-6 form-group">
-                                <input class="form-control" id="email" name="email" placeholder="Email" type="email"
-                                    required>
+                    <a href="theme1.php?id=<?php echo base64_encode($row['id']); ?>">
+                        <!--themelink-->
+                        <p><?php echo substr($row['theme_title'], 0, 15); ?>..</p>
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front">
+                                    <!--thumbnail-->
+
+                                    <?php
+                                 $path = 'themeimage_uploads/';
+                                 $completePath = $path.$row['theme_image'];
+                                 if(($row['theme_image'] != NULL || !empty($row['theme_image'])) && file_exists($completePath)){ ?>
+                                    <img src="themeimage_uploads/<?php echo $row['theme_image']; ?>" alt="Avatar"
+                                        style="height: 130px; width: 100%;">
+                                    <?php }else{?>
+                                    <svg class="bd-placeholder-img card-img-top" width="100%" height="200px"
+                                        xmlns="http://www.w3.org/2000/svg" role="img"
+                                        aria-label="Placeholder: Thumbnail" preserveAspectRatio='xMidYMid slice'
+                                        focusable='false'>
+                                        <title>Placeholder</title>
+                                        <rect width="100%" height="130px" fill="#55595c" /><text x="50%" y="50%"
+                                            fill="#eceeef" dy=".3em">ONTRAD IMAGE</text>
+                                    </svg>
+
+                                    <?php }
+                             ?>
+                                </div>
+                                <div class="flip-card-back">
+                                    <!--Byline-->
+                                    <p style="text-wrap: wrap; word-wrap: break-word; padding: 3px;">
+                                        <?php echo substr($row['theme_info'], 0, 20 )?>...</p>
+                                </div>
                             </div>
                         </div>
-                        <textarea class="form-control" id="comments" name="comments" placeholder="Comment"
-                            rows="5"></textarea><br>
-                        <div class="row">
-                            <div class="col-sm-12 form-group">
-                                <button class="button1 pull-right" type="submit">Send</button>
+                    </a>
+                    <?php
+                        }
+                    }else{
+                        echo "<p style='text-align:center; color: white; margin-top: 20px;'>No Theme Found related to '" . $search_query . "'</p>";
+                    }
+                }else{
+                    $sql = "SELECT * FROM `themes` WHERE `status` = 'Featured'";
+                $result = mysqli_query($conn, $sql);
+                if(mysqli_num_rows($result)>0){                            
+                    while ($row = mysqli_fetch_assoc($result)) {
+                ?>
+                    <a href="theme1.php?id=<?php echo base64_encode($row['id']); ?>">
+                        <!--themelink-->
+                        <p><?php echo substr($row['theme_title'], 0, 15); ?>..</p>
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front">
+                                    <!--thumbnail-->
+
+                                    <?php
+                                 $path = 'themeimage_uploads/';
+                                 $completePath = $path.$row['theme_image'];
+                                 if(($row['theme_image'] != NULL || !empty($row['theme_image'])) && file_exists($completePath)){ ?>
+                                    <img src="themeimage_uploads/<?php echo $row['theme_image']; ?>" alt="Avatar"
+                                        style="height: 130px; width: 100%;">
+                                    <?php }else{?>
+                                    <svg class="bd-placeholder-img card-img-top" width="100%" height="200px"
+                                        xmlns="http://www.w3.org/2000/svg" role="img"
+                                        aria-label="Placeholder: Thumbnail" preserveAspectRatio='xMidYMid slice'
+                                        focusable='false'>
+                                        <title>Placeholder</title>
+                                        <rect width="100%" height="130px" fill="#55595c" /><text x="50%" y="50%"
+                                            fill="#eceeef" dy=".3em">ONTRAD IMAGE</text>
+                                    </svg>
+
+                                    <?php }
+                             ?>
+                                </div>
+                                <div class="flip-card-back">
+                                    <!--Byline-->
+                                    <p style="text-wrap: wrap; word-wrap: break-word; padding: 3px;">
+                                        <?php echo substr($row['theme_info'], 0, 20 )?>...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <?php
+                    }
+                }
+            }
+                ?>
+                </div>
+                <a class="next" onclick="scrollHorizontallyThemes(2)" style="cursor: pointer;
+                    text-decoration: none;
+                    margin-left: 20px;
+                    ">❯</a>
+            </div>
+
+            <!-- Theme Section End Here  -->
+            <br><br>
+            <!-- Container (Contact Section) -->
+            <div class="container-fluid ontradgreenlite ontradred py-3" style="width: 100%;">
+                <h5 class="text-center">CONTACT US</h5>
+                <div class="row">
+                    <div class="col" style="width: 100%; text-align: center;">
+                        <h5> mail@ontariotraditionalmusic.ca</h5>
+                    </div>
+                </div>
+                <br>
+                <!-- Button to Open the Modal -->
+                <div style="text-align: center;">
+                    <button type="button" class="button1" data-toggle="modal" data-target="#dropline">
+                        Drop us a line
+                    </button>
+                </div>
+                <!-- The Modal -->
+                <div class="modal" id="dropline">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="alert alert-light m-3" style="padding: 3% 10% 3% 10%">
+                                <p style="text-align: center;">
+                                    <img src="images/ontradlogo160px.jpg" style="text-align: center;">
+                                    <hr>
+                                    We welcome your comments and suggestions
+                                </p>
+                                <div class="row">
+                                    <div class="col-sm-6 form-group">
+                                        <input class="form-control" style="width: 100%;" id="name" name="name"
+                                            placeholder="Name" type="text" required>
+                                    </div>
+                                    <div class="col-sm-6 form-group">
+                                        <input class="form-control" id="email" name="email" placeholder="Email"
+                                            type="email" required>
+                                    </div>
+                                </div>
+                                <textarea class="form-control" id="comments" name="comments" placeholder="Comment"
+                                    rows="5"></textarea><br>
+                                <div class="row">
+                                    <div class="col-sm-12 form-group">
+                                        <button class="button1 pull-right" type="submit">Send</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <br><br>
+                <div style="text-align: center;">
+                    <p><small>- CREATED BY BUSINESSLORE -</small>
+                    </p>
+                </div>
             </div>
+            <!--end of contact-->
         </div>
-        <br><br>
-        <div style="text-align: center;">
-            <p><small>- CREATED BY BUSINESSLORE -</small>
-            </p>
-        </div>
-    </div>
-    <!--end of contact-->
-    </div>
-    <!--end of wrapper-->
-    <script>
-    var acc = document.getElementsByClassName("accordion");
-    var i;
+        <!--end of wrapper-->
+        <script>
+        var acc = document.getElementsByClassName("accordion");
+        var i;
 
-    for (i = 0; i < acc.length; i++) {
-        acc[i].addEventListener("click", function() {
-            this.classList.toggle("active");
-            var panel = this.nextElementSibling;
-            if (panel.style.maxHeight) {
-                panel.style.maxHeight = null;
-            } else {
-                panel.style.maxHeight = panel.scrollHeight + "px";
-            }
-        });
-    }
-
-    function myFunction() {
-        var checkBox = document.getElementById("scores");
-        var text = document.getElementById("textscores");
-        if (checkBox.checked == true) {
-            text.style.display = "block";
-        } else {
-            text.style.display = "none";
-        }
-    }
-
-    function myFunction() {
-        var checkBox = document.getElementById("images");
-        var text = document.getElementById("textimages");
-        if (checkBox.checked == true) {
-            text.style.display = "block";
-        } else {
-            text.style.display = "none";
-        }
-    }
-
-    function myFunction() {
-        var checkBox = document.getElementById("video");
-        var text = document.getElementById("textvideo");
-        if (checkBox.checked == true) {
-            text.style.display = "block";
-        } else {
-            text.style.display = "none";
-        }
-    }
-
-    function myFunction() {
-        var checkBox = document.getElementById("load");
-        var text = document.getElementById("textload");
-        if (checkBox.checked == true) {
-            text.style.display = "block";
-        } else {
-            text.style.display = "none";
-        }
-    }
-// playing Song
-    // let currentlyPlaying = null;
-    // let currentSongName = null;
-    // function playAudio(element) {
-    //     let mainElement = element.target;
-    //     let song_name = mainElement.dataset.songName;
-    //     // mainElement.textContent = "Play Song";
-    //     if (currentlyPlaying) {
-    //         if (currentSongName === song_name) {
-    //             if (currentlyPlaying.paused) {
-    //                 currentlyPlaying.play(); 
-    //                 mainElement.textContent = "Pause Song";
-    //             } else {
-    //                 currentlyPlaying.pause();
-    //                 mainElement.textContent = "Play Song";
-    //             }
-    //             return;
-    //         } else {
-    //             if(currentlyPlaying){
-    //                 mainElement.textContent = "Play Song";
-    //                 currentlyPlaying.pause();
-    //             }
-    //         }
-    //     }
-
-    //     let newAudio = new Audio("audio/" + song_name);
-    //     newAudio.play();
-        
-    //     currentlyPlaying = newAudio; 
-    //     currentSongName = song_name;
-    //     mainElement.textContent = "Pause Song";
-    // }
-
-
- 
-    // let audioElements = {};
-
-    // function playAudio(element) {
-    //     let mainElement = element.target;
-    //     let song_name = mainElement.dataset.songName;
-
-    //     if (!audioElements[song_name]) {
-    //         audioElements[song_name] = new Audio("audio/" + song_name);
-    //     }
-
-    //     if (audioElements[song_name].paused) {
-    //         audioElements[song_name].play();
-    //         mainElement.textContent = "Pause Song";
-    //     } else {
-    //         audioElements[song_name].pause();
-    //         mainElement.textContent = "Play Song";
-    //     }
-    // }
-
-    let audioElements = {}; 
-
-    function playAudio(element) {
-        let mainElement = element.target;
-        let song_name = mainElement.dataset.songName;
-
-        if (!audioElements[song_name]) {
-            audioElements[song_name] = new Audio("audio/" + song_name);
-
-            audioElements[song_name].addEventListener("ended", function () {
-                mainElement.textContent = "Play Song";
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                }
             });
         }
 
-        if (audioElements[song_name].paused) {
-            audioElements[song_name].play();
-            mainElement.textContent = "Pause Song";
-        } else {
-            audioElements[song_name].pause();
-            mainElement.textContent = "Play Song";
+        function myFunction() {
+            var checkBox = document.getElementById("scores");
+            var text = document.getElementById("textscores");
+            if (checkBox.checked == true) {
+                text.style.display = "block";
+            } else {
+                text.style.display = "none";
+            }
         }
-    }
+
+        function myFunction() {
+            var checkBox = document.getElementById("images");
+            var text = document.getElementById("textimages");
+            if (checkBox.checked == true) {
+                text.style.display = "block";
+            } else {
+                text.style.display = "none";
+            }
+        }
+
+        function myFunction() {
+            var checkBox = document.getElementById("video");
+            var text = document.getElementById("textvideo");
+            if (checkBox.checked == true) {
+                text.style.display = "block";
+            } else {
+                text.style.display = "none";
+            }
+        }
+
+        function myFunction() {
+            var checkBox = document.getElementById("load");
+            var text = document.getElementById("textload");
+            if (checkBox.checked == true) {
+                text.style.display = "block";
+            } else {
+                text.style.display = "none";
+            }
+        }
+        // playing Song
+        // let currentlyPlaying = null;
+        // let currentSongName = null;
+        // function playAudio(element) {
+        //     let mainElement = element.target;
+        //     let song_name = mainElement.dataset.songName;
+        //     // mainElement.textContent = "Play Song";
+        //     if (currentlyPlaying) {
+        //         if (currentSongName === song_name) {
+        //             if (currentlyPlaying.paused) {
+        //                 currentlyPlaying.play(); 
+        //                 mainElement.textContent = "Pause Song";
+        //             } else {
+        //                 currentlyPlaying.pause();
+        //                 mainElement.textContent = "Play Song";
+        //             }
+        //             return;
+        //         } else {
+        //             if(currentlyPlaying){
+        //                 mainElement.textContent = "Play Song";
+        //                 currentlyPlaying.pause();
+        //             }
+        //         }
+        //     }
+
+        //     let newAudio = new Audio("audio/" + song_name);
+        //     newAudio.play();
+
+        //     currentlyPlaying = newAudio; 
+        //     currentSongName = song_name;
+        //     mainElement.textContent = "Pause Song";
+        // }
 
 
 
+        // let audioElements = {};
 
-    </script>
+        // function playAudio(element) {
+        //     let mainElement = element.target;
+        //     let song_name = mainElement.dataset.songName;
+
+        //     if (!audioElements[song_name]) {
+        //         audioElements[song_name] = new Audio("audio/" + song_name);
+        //     }
+
+        //     if (audioElements[song_name].paused) {
+        //         audioElements[song_name].play();
+        //         mainElement.textContent = "Pause Song";
+        //     } else {
+        //         audioElements[song_name].pause();
+        //         mainElement.textContent = "Play Song";
+        //     }
+        // }
+
+        let audioElements = {};
+
+        function playAudio(element) {
+            let mainElement = element.target;
+            let song_name = mainElement.dataset.songName;
+
+            if (!audioElements[song_name]) {
+                audioElements[song_name] = new Audio("audio/" + song_name);
+
+                audioElements[song_name].addEventListener("ended", function() {
+                    mainElement.textContent = "Play Song";
+                });
+            }
+
+            if (audioElements[song_name].paused) {
+                audioElements[song_name].play();
+                mainElement.textContent = "Pause Song";
+            } else {
+                audioElements[song_name].pause();
+                mainElement.textContent = "Play Song";
+            }
+        }
+
+        // scrolling for Songs
+        function scrollHorizontally(direction) {
+            const scrollContainer = document.querySelector('.scrollMenuSongs');
+            const scrollAmount = 200; // Adjust this value as needed
+
+            if (direction === -1) {
+                scrollContainer.scrollLeft -= scrollAmount;
+            } else if (direction === 1) {
+                scrollContainer.scrollLeft += scrollAmount;
+            }
+        }
+
+        // Scrolling for themes 
+        function scrollHorizontallyThemes(direction) {
+            const scrollContainer = document.querySelector('.scrollMenuThemes');
+            const scrollAmount = 200; // Adjust this value as needed
+
+            if (direction === -2) {
+                scrollContainer.scrollLeft -= scrollAmount;
+            } else if (direction === 2) {
+                scrollContainer.scrollLeft += scrollAmount;
+            }
+        }
+        </script>
 </body>
 
 </html>

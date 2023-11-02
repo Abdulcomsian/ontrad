@@ -167,22 +167,32 @@ if(isset($_GET['id'])){
             </div>
             <!--sheetmusic-->
             <?php
-        if($row['imageFull']!=NULL && !empty($row['imageFull'])){
+        if($row['sheetmusic']!=NULL && !empty($row['sheetmusic'])){
             echo "
             <div class='col-sm-6' style='text-align: center' id='sheetmusic'>
             <div class='gallery'>
-                <a target='_blank' href='images/".$row['imageFull']."'>
-                <img src='images/".$row['imageFull']."' alt='Mountains' width='600' height='400'>
+                <a target='_blank' href='musicsheet/".rawurlencode($row['sheetmusic'])."'>
+            ";
+        }
+        $extensionFile = pathinfo($row['sheetmusic'], PATHINFO_EXTENSION);
+        if($extensionFile == 'pdf'){
+            echo "<img src='musicsheet/pdficon.png' alt='Mountains' width='600' height='400'>
+                </a>
+            </div>
+            ";
+        }else{
+            echo "<img src='musicsheet/".$row['sheetmusic']."' alt='Mountains' width='600' height='400'>
                 </a>
             </div>
             ";
         }
+                
         ?>
 
             <!--sheetanno-->
             <?php
-        if($row['sheetmusic']!=NULL && !empty($row['sheetmusic'])){
-            echo "<div class='blurbtext'>".$row['sheetmusic']."</div>";
+        if($row['sheetanno']!=NULL && !empty($row['sheetanno'])){
+            echo "<div class='blurbtext'>".$row['sheetanno']."</div>";
         }
         ?>
 

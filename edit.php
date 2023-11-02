@@ -302,15 +302,26 @@ if ($result->num_rows > 0) {
                             <script type="text/javascript">
                                 const imagethumbs = document.getElementById('imagethumbs');
                                 const thumb_previews = document.getElementById('thumb_previews');
+
                                 imagethumbs.addEventListener('change', () => {
                                     const file = imagethumbs.files[0];
-                                    const reader = new FileReader();
-
-                                    reader.addEventListener('load', () => {
-                                        thumb_previews.src = reader.result;
-                                    });
                                     if (file) {
-                                        reader.readAsDataURL(file);
+                                        const fileName = file.name;
+                                        const fileExtension = fileName.split('.').pop().toLowerCase();
+                      
+                                        if (fileExtension === 'png' || fileExtension === 'jpg') {
+                                            const reader = new FileReader();
+                                            reader.addEventListener('load', () => {
+                                                thumb_previews.src = reader.result;
+                                            });
+                                            reader.readAsDataURL(file);
+                                        } else if (fileExtension === 'pdf') {
+                                            thumb_previews.src = 'musicsheet/pdficon.png'; 
+                                        } else {
+                                            alert("Image is Not Uploaded Successfully. Try Again") 
+                                        }
+                                    } else {
+                                        thumb_previews.src = ''; 
                                     }
                                 });
                             </script>

@@ -124,7 +124,7 @@ if(isset($_GET['message'])){
                         </div>
                         <br>
                         <h4 class="label">
-                            <label for="image">Images</label>
+                            <label for="image">Image</label>
                         </h4>
                         <div class="img py-2">
                             <img src="images/placeholder.jpg" alt="Lights" style="width:70%" id="image_preview">
@@ -158,6 +158,9 @@ if(isset($_GET['message'])){
                             </script>
                             <!--thumbnail image-->
                             <div class="form-group  py-2">
+                            <h4 class="label">
+                                <label for="image">Thumbnail Image</label>
+                            </h4>
                                 <a href="images/placeholder.jpg"></a>
                                 <div class="img py-2">
                                     <img src="images/placeholder.jpg" class="img-fluid img-thumbnail" alt="Lights"
@@ -214,20 +217,32 @@ if(isset($_GET['message'])){
                                     </div>
                                 </div>
                             </div>
-                            <script type="text/javascript">
+                            <script type="text/javascript">                            
                             const imagethumbs = document.getElementById('sheet-thumb');
                             const thumb_previews = document.getElementById('sheet_preview');
+
                             imagethumbs.addEventListener('change', () => {
                                 const file = imagethumbs.files[0];
-                                const reader = new FileReader();
-
-                                reader.addEventListener('load', () => {
-                                    thumb_previews.src = reader.result;
-                                });
                                 if (file) {
-                                    reader.readAsDataURL(file);
+                                    const fileName = file.name;
+                                    const fileExtension = fileName.split('.').pop().toLowerCase();
+
+                                    if (fileExtension === 'png' || fileExtension === 'jpg') {
+                                        const reader = new FileReader();
+                                        reader.addEventListener('load', () => {
+                                            thumb_previews.src = reader.result;
+                                        });
+                                        reader.readAsDataURL(file);
+                                    } else if (fileExtension === 'pdf') {
+                                        thumb_previews.src = 'musicsheet/pdficon.png'; 
+                                    } else {
+                                        alert("Image is Not Uploaded Successfully. Try Again") 
+                                    }
+                                } else {
+                                    thumb_previews.src = ''; 
                                 }
                             });
+
                             </script>
                         </div>
                     </div>
