@@ -167,25 +167,30 @@ if(isset($_GET['id'])){
             </div>
             <!--sheetmusic-->
             <?php
-        if($row['sheetmusic']!=NULL && !empty($row['sheetmusic'])){
-            echo "
-            <div class='col-sm-6' style='text-align: center' id='sheetmusic'>
-            <div class='gallery'>
-                <a target='_blank' href='musicsheet/".rawurlencode($row['sheetmusic'])."'>
-            ";
-        }
-        $extensionFile = pathinfo($row['sheetmusic'], PATHINFO_EXTENSION);
-        if($extensionFile == 'pdf'){
-            echo "<img src='musicsheet/pdficon.png' alt='Mountains' width='600' height='400'>
-                </a>
-            </div>
-            ";
-        }else{
-            echo "<img src='musicsheet/".$row['sheetmusic']."' alt='Mountains' width='600' height='400'>
-                </a>
-            </div>
-            ";
-        }
+            if($row['sheetmusic']!=NULL && !empty($row['sheetmusic'])){
+                echo "
+                <div class='col-sm-6' style='text-align: center' id='sheetmusic'>
+                <div class='gallery'>
+                    <a target='_blank' href='musicsheet/".rawurlencode($row['sheetmusic'])."'>
+                ";
+            }
+            $extensionFile = pathinfo($row['sheetmusic'], PATHINFO_EXTENSION);
+            if($extensionFile == 'pdf'){
+                echo "<embed src='musicsheet/".rawurlencode($row['sheetmusic'])."'   height='700px' width='500'>
+                    </a>
+                </div>
+                ";
+            }elseif($extensionFile == 'docx'){
+                echo "<img src='musicsheet/word.png' alt='Word' style='width:100%; height:auto; text-align:left;' class='image-set' id='thumb_previews'>
+                    </a>
+                </div>
+                ";
+            }else{
+                echo "<img src='musicsheet/".$row['sheetmusic']."' alt='Mountains' width='600' height='400'>
+                    </a>
+                </div>
+                ";
+            }
                 
         ?>
 

@@ -272,7 +272,7 @@ if ($result->num_rows > 0) {
                             <div style="text-align: center;">
                                 <div style="text-align:left;">
                                     <?php if ($extension == "pdf") { ?>
-                                        <a href="musicsheet/<?php echo $row["sheetmusic"] ?>"><img src="musicsheet/pdficon.png" alt="PDF" style="width:100%; height:auto; text-align:left;" class="image-set" id="thumb_previews"></a>
+                                        <a href="musicsheet/<?php echo $row["sheetmusic"] ?>"><embed src="musicsheet/<?php echo $row["sheetmusic"] ?>"   height="700px" width="500"></a>
                                     <?php } else if ($extension == "doc" || $extension == "docx") { ?>
                                         <a href="musicsheet/<?php echo $row["sheetmusic"] ?>"><img src="musicsheet/word.png" alt="Word" style="width:100%; height:auto; text-align:left;" class="image-set" id="thumb_previews"></a>
                                     <?php } else {
