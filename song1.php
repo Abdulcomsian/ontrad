@@ -72,7 +72,7 @@ if(isset($_GET['id'])){
                     ?>
                         </div>
                         <?php
-            if($row['shortanno']!=NULL && !empty($row['shortanno']) || $row['longanno']!=NULL && !empty($row['longanno'])){
+                if($row['shortanno']!=NULL && !empty($row['shortanno']) || $row['longanno']!=NULL && !empty($row['longanno'])){
                 echo "
                 <!--short annotation-->
                 <div class='tfont'>
@@ -83,22 +83,33 @@ if(isset($_GET['id'])){
                 ".$row['longanno']."
                 </div>
                 ";
-            }
-            ?>
+                }
+                ?>
                 </div>
                 <!--right image-->
                 <?php
-        if($row['imageThumb']!=NULL && !empty($row['imageThumb'])){
-            echo "
-            <div class='col-sm-4' style=' text-align: center;'><img src='images/".$row['imageThumb']."' style='width: 100%; max-width: 250px;'>
-            ";
-        }
-        ?>
+                    if($row['imageThumb']!=NULL && !empty($row['imageThumb'])){
+                        echo "
+                        <div class='col-sm-4' style=' text-align: center;'><img src='images/".$row['imageThumb']."' style='width: 100%; max-width: 250px;'>
+                        ";
+                    }
+                    ?>
             </div>
         </div>
     </div>
+
+    <!-- Full image row with full width  -->
+    <hr>
+    <div class="row">
+        <?php if(!empty($row['imageFull'])){ ?>
+        <div class="mb-3 mt-3" style="text-align:center;">
+            <img src="images/<?php echo $row['imageFull']; ?>" style="width: 50%; height: 100%;" alt="Full Image">
+        </div>
+        <?php } ?>
+    </div>
+    <hr>
     <!--Music-->
-    <?php if(!empty($row['audio1']) || !empty($row['audio2']) || !empty($row['video2'] || !empty($row['imageFull']) || $row['sheetmusic'])){ ?>
+    <?php if(!empty($row['audio1']) || !empty($row['audio2']) || !empty($row['video2'] || !empty($row['video1']) || !empty($row['imageFull']) || $row['sheetmusic'])){ ?>
     <div class="row pt-3">
         <div class="col-sm-6" style="text-align: center;">
 
@@ -151,7 +162,9 @@ if(isset($_GET['id'])){
                                 </div>
                                 ";
                             }else{
-                            echo " <iframe width='560' height='315' src='".$row['video2']."' title='YouTube video player' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowfullscreen></iframe>
+                            echo " <video width='500px' height='500px' controls='controls'>
+                            <source src='video/".$row['video1']."' type='video/mp4' />
+                           </video>
                             </div>
                             <div class=blurbtext'>
                                     </div>";

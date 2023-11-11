@@ -1,42 +1,52 @@
+<?php 
+include('config/db.php') 
+?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"
+        integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <style>
-      /*all input style */
+/*all input style */
 .input-clr input {
-  padding: 10px;
-  border: navajowhite;
-  box-shadow: 0px 0px 11px 0px #7d757585;
-  font-family: sans-serif;
+    padding: 10px;
+    border: navajowhite;
+    box-shadow: 0px 0px 11px 0px #7d757585;
+    font-family: sans-serif;
 }
-.input-clr textarea{
-  padding: 10px;
-  border: navajowhite;
-  box-shadow: 0px 0px 11px 0px #7d757585;
-  font-family: sans-serif;
+
+.input-clr textarea {
+    padding: 10px;
+    border: navajowhite;
+    box-shadow: 0px 0px 11px 0px #7d757585;
+    font-family: sans-serif;
 }
+
 /* alert style */
-.alert.alert-secondary{
+.alert.alert-secondary {
     background: white;
     border: navajowhite;
     padding: 0;
 
 }
-.alert.alert-secondary select{
+
+.alert.alert-secondary select {
     padding: 10px;
-  border: navajowhite;
-  box-shadow: 0px 0px 11px 0px #7d757585;
-  font-family: sans-serif;
+    border: navajowhite;
+    box-shadow: 0px 0px 11px 0px #7d757585;
+    font-family: sans-serif;
 }
+
 /* labels style  */
 h4.label label {
     font-size: 27px;
@@ -46,7 +56,7 @@ h4.label label {
 
 /* uploaded image css  */
 .img img {
-    
+
     border-radius: 30px;
     box-shadow: 0px 0px 9px 0px #82828259;
 }
@@ -57,36 +67,38 @@ img.image-set {
 
 /* upload btn style  */
 .upload-btn-wrapper {
-  position: relative;
-  overflow: hidden;
-  display: inline-block;
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
 }
 
 .btn {
-  border: 2px solid gray;
-  color: gray;
-  background-color: white;
-  padding: 8px 20px;
-  border-radius: 8px;
-  font-size: 20px;
-  font-weight: bold;
+    border: 2px solid gray;
+    color: gray;
+    background-color: white;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: bold;
 }
 
 .upload-btn-wrapper input[type=file] {
-  font-size: 100px;
-  position: absolute;
-  left: 0;
-  top: 0;
-  opacity: 0;
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
 }
+
 .fileuploader {
     display: flex;
     justify-content: center;
     gap: 15px;
     align-items: center;
 }
- /* view table and result table */
-    .cont {
+
+/* view table and result table */
+.cont {
     width: 70% !important;
     margin: 0 auto;
     overflow: auto;
@@ -98,34 +110,36 @@ img.image-set {
 }
 
 table {
-  border-collapse: collapse;
-  border-spacing: 0;
-  width: 100%;
-  border: 1px solid #ddd;
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    border: 1px solid #ddd;
 }
 
-th, td {
-  text-align: left;
-  padding: 8px;
-  text-align: left;
+th,
+td {
+    text-align: left;
+    padding: 8px;
+    text-align: left;
     padding: 8px;
     font-family: sans-serif;
     border: 1px solid #8080802e;
 
 }
 
-tr:nth-child(even){
+tr:nth-child(even) {
     background-color: #f2f2f2;
 }
 
 /* search form */
-.contain{
-  width: 70% !important;
+.contain {
+    width: 70% !important;
     margin: 0 auto;
-    gap:20px;
+    gap: 20px;
 }
-.serch{
-  color: white;
+
+.serch {
+    color: white;
 }
 
 /* search result found */
@@ -135,30 +149,31 @@ p.contain.search-rs {
 }
 
 /* search result not found */
-.nf{
-  font-size: 22px;
+.nf {
+    font-size: 22px;
     font-weight: bold;
 }
 
 
 ::-webkit-scrollbar {
-  width: 20px;
+    width: 20px;
 }
 
 /* Track */
 .cont::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+    background: #f1f1f1;
 }
- 
+
 /* Handle */
 .cont::-webkit-scrollbar-thumb {
-  background: #888; 
+    background: #888;
 }
 
 /* Handle on hover */
 .cont::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+    background: #555;
 }
+
 .search-frm {
     border: none;
     box-shadow: 0px 0px 2px 0px gray;
@@ -169,14 +184,14 @@ p.contain.search-rs {
     padding: 10px;
     border: 1px solid gray;
 }
-
 </style>
+
 <body>
- 
-<!--nav-->
-<nav class="navbar navbar-expand-sm ontradgreen">
+
+    <!--nav-->
+    <nav class="navbar navbar-expand-sm ontradgreen">
         <!-- Brand/logo -->
-        <a class="navbar-brand ontradwhite" href="#">ONTRAD</a>
+        <a class="navbar-brand ontradwhite" href="index.php">ONTRAD</a>
 
         <!-- Links -->
         <ul class="navbar-nav ontradnav">
@@ -190,8 +205,53 @@ p.contain.search-rs {
                 <a class="nav-link" href="themelist.php" style="color: whitesmoke;">Themes</a>
             </li>
         </ul>
+
+
+        <?php
+      $url = basename($_SERVER['PHP_SELF']);
+      $sql = "SELECT * FROM `newtable` ORDER BY `Stitle`";
+      $result = mysqli_query($conn, $sql);
+      $songs = array();
+      while($row = mysqli_fetch_assoc($result)){
+        $songs[] = $row['ID'];
+      }
+      if($url == 'song1.php'){
+        $urlId = base64_decode($_GET['id']);
+        if(isset($urlId)){
+          $currentSongIndex = array_search($urlId, $songs);
+        }
+        
+        $prevIndex = ($currentSongIndex > 0) ? $currentSongIndex - 1 : 0;
+        $nextIndex = ($currentSongIndex < count($songs) - 1) ? $currentSongIndex + 1 : $currentSongIndex;
+        
+    ?>
+
+        <div class="col-md-6 text-end">
+            <a href="song1.php?id=<?php echo base64_encode($songs[$prevIndex]); ?>">
+                <button type="button" class="btn ontradgreen"> <svg xmlns="http://www.w3.org/2000/svg" width="30"
+                        height="30" fill="currentColor" class="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
+                        <path
+                            d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z" />
+                    </svg>
+                </button>
+            </a>
+            <a href="song1.php?id=<?php echo base64_encode($songs[$nextIndex]); ?>">
+                <button type="button" class="btn ontradgreen me-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+                        class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
+                        <path
+                            d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z" />
+                    </svg>
+                </button>
+            </a>
+        </div>
+
+        <?php } ?>
+
     </nav>
-  <!--end of nav-->
+
+    <!--end of nav-->
 
 </body>
+
 </html>
